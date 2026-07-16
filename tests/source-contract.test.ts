@@ -1,0 +1,45 @@
+// @vitest-environment node
+import { readFile, readdir } from 'node:fs/promises'
+import path from 'node:path'
+import { describe, expect, it } from 'vitest'
+
+const root = process.cwd()
+
+describe('release contracts', () => {
+  it('keeps motion optional and content visible by default', async () => {
+    const [css, hero] = await Promise.all([
+      readFile(path.join(root, 'src', 'index.css'), 'utf8'),
+      readFile(path.join(root, 'src', 'sections', 'Hero.tsx'), 'utf8'),
+    ])
+
+    expect(css).toContain('@media (prefers-reduced-motion: reduce)')
+    expect(css).toContain("html[data-motion='reduced']")
+    expect(hero).not.toContain('opacity-0')
+    expect(hero).not.toContain('gsap')
+  })
+
+  it('marks every source-authored canvas as hidden from the accessibility tree', async () => {
+    const directories = [path.join(root, 'src', 'sections'), path.join(root, 'src', 'components')]
+    const sources = await Promise.all(directories.map(async (directory) => {
+      const files = (await readdir(directory)).filter((file) => file.endsWith('.tsx'))
+      return Promise.all(files.map((file) => readFile(path.join(directory, file), 'utf8')))
+    }))
+    const source = sources.flat(2).join('\n')
+    const tags = source.match(/<canvas[\s\S]*?\/>/g) ?? []
+
+    expect(tags.length).toBeGreaterThanOrEqual(9)
+    for (const tag of tags) expect(tag).toContain('aria-hidden="true"')
+  })
+
+  it('does not restore the removed scaffold or reflex font stack', async () => {
+    const [uiFiles, html, packageJson] = await Promise.all([
+      readdir(path.join(root, 'src', 'components', 'ui')).catch(() => []),
+      readFile(path.join(root, 'index.html'), 'utf8'),
+      readFile(path.join(root, 'package.json'), 'utf8'),
+    ])
+
+    expect(uiFiles).toHaveLength(0)
+    expect(html).not.toMatch(/Fraunces|Space Grotesk|IBM Plex/)
+    expect(packageJson).not.toMatch(/gsap|react-router|@radix-ui|recharts/)
+  })
+})

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">The Shape of Intelligence</title>
+  <desc id="desc">Gold, violet, and sea-green forms orbit the title on a near-black field.</desc>
+  <rect width="1200" height="630" fill="#07070b"/>
+  <g fill="none" opacity=".82">
+    <path d="M713 61c152 4 282 137 243 284-42 159-245 238-379 144-132-94-100-326 38-402 29-16 62-27 98-26Z" stroke="#8b7cff" stroke-width="42"/>
+    <path d="M795 108c119 22 192 150 143 259-52 116-211 151-302 64-94-90-54-256 54-310 33-17 68-20 105-13Z" stroke="#e8b36a" stroke-width="31"/>
+    <path d="M797 185c72 12 118 88 94 157-28 80-137 100-192 37-57-65-24-173 52-193 15-4 30-4 46-1Z" stroke="#6fe0c3" stroke-width="22"/>
+  </g>
+  <g fill="#ede7da" font-family="Georgia,serif">
+    <text x="74" y="250" font-size="91">The Shape of</text>
+    <text x="74" y="351" font-size="112" font-style="italic">Intelligence</text>
+  </g>
+  <text x="80" y="520" fill="#c9c3b8" font-family="Arial,sans-serif" font-size="24" letter-spacing="2">A TACTILE, VISUAL, AND MUSICAL ESSAY</text>
+</svg>
