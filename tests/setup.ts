@@ -8,6 +8,10 @@ afterEach(() => {
 })
 
 if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'scrollBy', {
+    writable: true,
+    value: () => undefined,
+  })
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
     value: (query: string) => ({

@@ -19,9 +19,12 @@ import {
 } from 'three';
 import { fbm2, lerp, smoothstep } from '@/lib/noise';
 import { ChapterHead } from '@/components/ChapterHead';
+import { ChapterTradeoff } from '@/components/ChapterTradeoff';
+import { CHAPTER_BY_ID } from '@/content/chapters';
 import { useExperiencePreferences } from '@/lib/experience-preferences';
 
 export function ShapeshiftChapter() {
+  const chapter = CHAPTER_BY_ID.shapeshift;
   const mountRef = useRef<HTMLDivElement>(null);
   const { quality } = useExperiencePreferences();
 
@@ -236,10 +239,16 @@ export function ShapeshiftChapter() {
         />
         <div className="pointer-events-none absolute bottom-5 left-6 flex items-center gap-3">
           <span className="font-mono-label text-xs tracking-[0.12em] text-paper/70 uppercase">
-            procedural field · 1,600 instances
+            local rules becoming a skyline
           </span>
           <span className="h-px w-10 bg-violet-glow/30" />
         </div>
+      </div>
+      <div className="relative mx-auto max-w-7xl px-6 pb-28 md:pb-36">
+        <ChapterTradeoff
+          capability={chapter.capability}
+          blindSpot={chapter.blindSpot}
+        />
       </div>
     </section>
   );

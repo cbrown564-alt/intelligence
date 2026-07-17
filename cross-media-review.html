@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#06060a">
+  <title>Cross-media design review — The Shape of Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600&family=Petrona:ital,wght@0,300;0,400;1,350&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #06060a;
+      --ink-2: #0a0a10;
+      --paper: #f1ebdf;
+      --muted: rgba(241, 235, 223, 0.72);
+      --dim: rgba(241, 235, 223, 0.48);
+      --rule: rgba(241, 235, 223, 0.16);
+      --sand: #efad58;
+      --violet: #b7a8ff;
+      --sea: #77dfc7;
+      --rose: #ff806f;
+      --web: #efad58;
+      --video: #77dfc7;
+      --cross: #b7a8ff;
+      --max: 1240px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: "Atkinson Hyperlegible Next", system-ui, sans-serif;
+      font-size: 1rem;
+      line-height: 1.6;
+      text-rendering: optimizeLegibility;
+    }
+
+    a { color: inherit; }
+    button, video { font: inherit; }
+    button { color: inherit; }
+    img, video, svg { display: block; max-width: 100%; }
+    p { margin: 0; }
+    h1, h2, h3 { text-wrap: balance; }
+
+    .skip-link {
+      position: fixed;
+      left: 1rem;
+      top: 1rem;
+      z-index: 20;
+      transform: translateY(-180%);
+      background: var(--paper);
+      color: var(--ink);
+      padding: 0.7rem 1rem;
+    }
+    .skip-link:focus { transform: none; }
+
+    .masthead {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      min-height: 64px;
+      padding: 0 1.25rem;
+      border-bottom: 1px solid var(--rule);
+      background: var(--ink);
+    }
+    .masthead strong,
+    .masthead span {
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .masthead span { color: var(--dim); }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--rule);
+      background:
+        radial-gradient(circle at 82% 24%, rgba(183, 168, 255, 0.13), transparent 28%),
+        radial-gradient(circle at 14% 72%, rgba(119, 223, 199, 0.08), transparent 30%);
+    }
+    .hero-inner {
+      width: min(var(--max), calc(100% - 2.5rem));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.58fr);
+      gap: clamp(2.5rem, 7vw, 7rem);
+      align-items: center;
+      padding: clamp(5rem, 10vw, 9rem) 0;
+    }
+    .hero-kicker {
+      max-width: 48rem;
+      color: var(--sand);
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      max-width: 13ch;
+      margin: 1.3rem 0 1.6rem;
+      font-family: Petrona, Georgia, serif;
+      font-size: clamp(3.6rem, 7.6vw, 6rem);
+      font-weight: 300;
+      letter-spacing: -0.035em;
+      line-height: 0.94;
+    }
+    .hero h1 em { color: var(--violet); font-weight: 350; }
+    .hero-deck {
+      max-width: 61ch;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 1.8vw, 1.32rem);
+      line-height: 1.55;
+    }
+    .verdict {
+      display: flex;
+      gap: 1rem;
+      align-items: baseline;
+      margin-top: 2.4rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--rule);
+    }
+    .verdict strong {
+      color: var(--rose);
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .verdict span { color: var(--muted); }
+
+    .film-frame { margin: 0; }
+    .film-frame video {
+      width: min(100%, 390px);
+      margin-left: auto;
+      aspect-ratio: 9 / 16;
+      object-fit: cover;
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      background: #020204;
+    }
+    .film-frame figcaption {
+      width: min(100%, 390px);
+      margin: 0.7rem 0 0 auto;
+      color: var(--dim);
+      font-size: 0.82rem;
+    }
+
+    .thesis-strip {
+      background: var(--sand);
+      color: #161008;
+    }
+    .thesis-strip-inner {
+      width: min(var(--max), calc(100% - 2.5rem));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 10rem 1fr;
+      gap: clamp(1.5rem, 5vw, 5rem);
+      padding: 2.25rem 0;
+    }
+    .thesis-strip strong {
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .thesis-strip p {
+      max-width: 50ch;
+      font-family: Petrona, Georgia, serif;
+      font-size: clamp(1.5rem, 3vw, 2.65rem);
+      font-weight: 400;
+      line-height: 1.16;
+    }
+
+    main section {
+      width: min(var(--max), calc(100% - 2.5rem));
+      margin: 0 auto;
+      padding: clamp(5rem, 9vw, 8rem) 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .section-head {
+      display: grid;
+      grid-template-columns: 10rem minmax(0, 1fr);
+      gap: clamp(1.5rem, 5vw, 5rem);
+      margin-bottom: clamp(3rem, 6vw, 5rem);
+    }
+    .section-index {
+      color: var(--sand);
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .section-head h2 {
+      max-width: 16ch;
+      margin: 0;
+      font-family: Petrona, Georgia, serif;
+      font-size: clamp(2.8rem, 5.5vw, 5rem);
+      font-weight: 300;
+      letter-spacing: -0.03em;
+      line-height: 0.98;
+    }
+    .section-head p {
+      max-width: 64ch;
+      margin-top: 1.5rem;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .health-grid {
+      display: grid;
+      grid-template-columns: minmax(200px, 0.6fr) minmax(0, 1.4fr);
+      gap: clamp(2rem, 6vw, 6rem);
+      align-items: start;
+    }
+    .score {
+      padding-top: 1.5rem;
+      border-top: 3px solid var(--sand);
+    }
+    .score strong {
+      display: block;
+      font-family: Petrona, Georgia, serif;
+      font-size: clamp(4rem, 9vw, 7rem);
+      font-weight: 300;
+      line-height: 0.9;
+    }
+    .score span { color: var(--muted); }
+    .health-table { width: 100%; border-collapse: collapse; }
+    .health-table th,
+    .health-table td {
+      padding: 0.82rem 0.5rem;
+      border-top: 1px solid var(--rule);
+      text-align: left;
+      vertical-align: top;
+    }
+    .health-table th { color: var(--dim); font-weight: 400; }
+    .health-table td:nth-child(2) { width: 4rem; color: var(--sand); }
+
+    .triptych {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(1.5rem, 4vw, 4rem);
+    }
+    .judgement {
+      padding-top: 1.5rem;
+      border-top: 2px solid var(--rule);
+    }
+    .judgement:nth-child(1) { border-color: var(--sand); }
+    .judgement:nth-child(2) { border-color: var(--violet); }
+    .judgement:nth-child(3) { border-color: var(--sea); }
+    .judgement h3 {
+      margin: 0 0 1rem;
+      font-family: Petrona, Georgia, serif;
+      font-size: 2rem;
+      font-weight: 400;
+    }
+    .judgement p { color: var(--muted); }
+    .judgement strong { color: var(--paper); font-weight: 500; }
+
+    .story-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 7vw, 7rem);
+    }
+    .story-lane { position: relative; }
+    .story-lane h3 {
+      margin: 0 0 1.5rem;
+      font-size: 0.86rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .story-lane--web h3 { color: var(--web); }
+    .story-lane--video h3 { color: var(--video); }
+    .story-step {
+      display: grid;
+      grid-template-columns: 4.6rem 1fr;
+      gap: 1rem;
+      padding: 1.05rem 0;
+      border-top: 1px solid var(--rule);
+    }
+    .story-step span { color: var(--dim); font-variant-numeric: tabular-nums; }
+    .story-step p { color: var(--muted); }
+    .story-step strong { color: var(--paper); font-weight: 500; }
+    .story-break {
+      margin-top: 1.5rem;
+      padding: 1.2rem 0;
+      border-top: 3px solid var(--rose);
+      color: var(--rose);
+      font-family: Petrona, Georgia, serif;
+      font-size: 1.35rem;
+    }
+
+    .plot-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 18rem;
+      gap: clamp(2rem, 5vw, 4rem);
+      align-items: stretch;
+    }
+    .quadrant {
+      position: relative;
+      min-height: 620px;
+      border-left: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      background:
+        linear-gradient(to right, transparent 49.85%, var(--rule) 50%, transparent 50.15%),
+        linear-gradient(to bottom, transparent 49.85%, var(--rule) 50%, transparent 50.15%);
+    }
+    .quadrant-label {
+      position: absolute;
+      color: var(--dim);
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .quadrant-label.tl { left: 1rem; top: 1rem; }
+    .quadrant-label.tr { right: 1rem; top: 1rem; }
+    .quadrant-label.bl { left: 1rem; bottom: 1rem; }
+    .quadrant-label.br { right: 1rem; bottom: 1rem; }
+    .axis-label {
+      position: absolute;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    .axis-label.x { right: 0; bottom: -2rem; }
+    .axis-label.y {
+      left: 0.4rem;
+      top: 50%;
+      transform: rotate(-90deg) translateX(-50%);
+      transform-origin: left top;
+    }
+    .point {
+      position: absolute;
+      left: calc(var(--x) * 1%);
+      bottom: calc(var(--y) * 1%);
+      transform: translate(-50%, 50%);
+      width: 2.75rem;
+      height: 2.75rem;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      cursor: pointer;
+      color: #07070b;
+      font-weight: 600;
+    }
+    .point[data-medium="Webpage"] { background: var(--web); }
+    .point[data-medium="Video"] { background: var(--video); }
+    .point[data-medium="Cross-media"] { background: var(--cross); }
+    .point:hover,
+    .point[aria-pressed="true"] { transform: translate(-50%, 50%) scale(1.18); }
+
+    .plot-detail {
+      align-self: end;
+      padding-top: 1.5rem;
+      border-top: 3px solid var(--cross);
+    }
+    .plot-detail-code {
+      display: block;
+      margin-bottom: 1rem;
+      font-family: Petrona, Georgia, serif;
+      font-size: 4rem;
+      font-weight: 300;
+      line-height: 1;
+    }
+    .plot-detail h3 {
+      margin: 0 0 0.6rem;
+      font-family: Petrona, Georgia, serif;
+      font-size: 1.7rem;
+      font-weight: 400;
+      line-height: 1.15;
+    }
+    .plot-detail p { color: var(--muted); }
+    .plot-detail-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      margin-top: 1rem;
+      color: var(--dim);
+      font-size: 0.84rem;
+    }
+    .plot-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 1.6rem;
+      margin-top: 3rem;
+      color: var(--muted);
+    }
+    .plot-legend span { display: inline-flex; align-items: center; gap: 0.5rem; }
+    .swatch { width: 0.72rem; height: 0.72rem; border-radius: 999px; }
+    .swatch.web { background: var(--web); }
+    .swatch.video { background: var(--video); }
+    .swatch.cross { background: var(--cross); }
+
+    .recommendation-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 7vw, 7rem);
+    }
+    .recommendation-list h3 {
+      margin: 0 0 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 3px solid var(--rule);
+      font-family: Petrona, Georgia, serif;
+      font-size: 2.2rem;
+      font-weight: 400;
+    }
+    .recommendation-list--web h3 { border-color: var(--web); }
+    .recommendation-list--video h3 { border-color: var(--video); }
+    .rec {
+      display: grid;
+      grid-template-columns: 2.4rem 1fr;
+      gap: 1rem;
+      padding: 1.35rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .rec > span { color: var(--dim); font-variant-numeric: tabular-nums; }
+    .rec h4 {
+      margin: 0 0 0.35rem;
+      font-size: 1.04rem;
+      font-weight: 600;
+    }
+    .rec p { color: var(--muted); }
+
+    .cross-media {
+      margin-top: 5rem;
+      padding: clamp(2rem, 5vw, 4rem);
+      background: var(--violet);
+      color: #100d19;
+    }
+    .cross-media h3 {
+      max-width: 16ch;
+      margin: 0 0 1rem;
+      font-family: Petrona, Georgia, serif;
+      font-size: clamp(2.3rem, 5vw, 4.8rem);
+      font-weight: 400;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+    .cross-media p { max-width: 66ch; font-size: 1.08rem; }
+
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(1.5rem, 4vw, 4rem);
+    }
+    .phase {
+      padding-top: 1.5rem;
+      border-top: 3px solid var(--rule);
+    }
+    .phase:nth-child(1) { border-color: var(--rose); }
+    .phase:nth-child(2) { border-color: var(--sand); }
+    .phase:nth-child(3) { border-color: var(--violet); }
+    .phase h3 {
+      margin: 0 0 1rem;
+      font-family: Petrona, Georgia, serif;
+      font-size: 2rem;
+      font-weight: 400;
+    }
+    .phase ul { margin: 0; padding-left: 1.15rem; color: var(--muted); }
+    .phase li + li { margin-top: 0.7rem; }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--rule);
+    }
+    .evidence-stat { padding: 1.5rem; background: var(--ink); }
+    .evidence-stat strong {
+      display: block;
+      margin-bottom: 0.35rem;
+      font-family: Petrona, Georgia, serif;
+      font-size: 2.4rem;
+      font-weight: 300;
+    }
+    .evidence-stat span { color: var(--dim); }
+    .evidence-notes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 5vw, 5rem);
+      margin-top: 3rem;
+    }
+    .evidence-notes h3 { margin: 0 0 0.7rem; font-size: 1rem; }
+    .evidence-notes p { color: var(--muted); }
+    code { color: var(--sea); font-family: ui-monospace, Consolas, monospace; font-size: 0.88em; }
+
+    footer {
+      width: min(var(--max), calc(100% - 2.5rem));
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 2rem;
+      padding: 2.5rem 0 4rem;
+      color: var(--dim);
+      font-size: 0.82rem;
+    }
+
+    @media (max-width: 900px) {
+      .hero-inner,
+      .health-grid,
+      .plot-shell { grid-template-columns: 1fr; }
+      .film-frame video,
+      .film-frame figcaption { margin-left: 0; }
+      .film-frame video { width: min(100%, 320px); }
+      .triptych,
+      .roadmap { grid-template-columns: 1fr; }
+      .plot-detail { max-width: 36rem; }
+      .evidence-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 680px) {
+      .masthead span { display: none; }
+      .thesis-strip-inner,
+      .section-head,
+      .story-split,
+      .recommendation-grid,
+      .evidence-notes { grid-template-columns: 1fr; }
+      .section-head h2 { max-width: 13ch; }
+      .quadrant { min-height: 500px; }
+      .point { width: 2.75rem; height: 2.75rem; }
+      footer { flex-direction: column; }
+    }
+
+    @media (max-width: 420px) {
+      .hero-inner,
+      main section,
+      .thesis-strip-inner,
+      footer { width: min(100% - 1.5rem, var(--max)); }
+      .hero h1 { font-size: clamp(3rem, 15vw, 4rem); }
+      .quadrant { min-height: 440px; }
+      .quadrant-label { max-width: 6rem; }
+      .evidence-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: 0.01ms !important; }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .point { transition: transform 160ms ease-out; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to review</a>
+
+  <header class="masthead">
+    <strong>The Shape of Intelligence · critical review</strong>
+    <span>Webpage + 48-second mobile film · 17 July 2026</span>
+  </header>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div>
+        <p class="hero-kicker">Design · story · implementation</p>
+        <h1>An extraordinary instrument with a <em>split thesis.</em></h1>
+        <p class="hero-deck">
+          The webpage says interfaces reveal and hide. The film says a mind can inhabit alien senses.
+          The craft is already distinctive; the next leap is to make both media leave the same precise,
+          unsettling idea in the audience’s head.
+        </p>
+        <div class="verdict">
+          <strong>Needs revision</strong>
+          <span>before public promotion—not because it lacks wonder, but because the wonder currently outruns the claim.</span>
+        </div>
+      </div>
+
+      <figure class="film-frame">
+        <video controls muted playsinline preload="metadata" poster="./renders/shape-of-intelligence-mobile-poster.png" aria-label="The Shape of Intelligence 48-second mobile companion film">
+          <source src="./renders/shape-of-intelligence-mobile.mp4" type="video/mp4">
+          Your browser cannot play the companion film.
+        </video>
+        <figcaption>48 seconds · 1080 × 1920 · silent H.264 master · 24.0 MB</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <aside class="thesis-strip" aria-label="Core opportunity">
+    <div class="thesis-strip-inner">
+      <strong>Core opportunity</strong>
+      <p>One particle. One claim. Two media: the film gives it an origin; the webpage gives the audience agency.</p>
+    </div>
+  </aside>
+
+  <main id="main">
+    <section aria-labelledby="health-title">
+      <div class="section-head">
+        <span class="section-index">01 · Health</span>
+        <div>
+          <h2 id="health-title">Good foundation. Important contradictions.</h2>
+          <p>The system is accessible, technically disciplined, and recognisably authored. Its weakest points are hierarchy over time: what dominates, what disappears, and what the ending finally claims.</p>
+        </div>
+      </div>
+
+      <div class="health-grid">
+        <div class="score">
+          <strong>30<span>/40</span></strong>
+          <span>Nielsen heuristic score · “Good” band</span>
+        </div>
+        <table class="health-table">
+          <thead><tr><th>Heuristic</th><th>Score</th><th>Pressure point</th></tr></thead>
+          <tbody>
+            <tr><td>System status</td><td>3/4</td><td>Visible chapter and preferences; motion toggle can displace the current chapter.</td></tr>
+            <tr><td>Real-world match</td><td>3/4</td><td>Clear prose weakened by “Detail lite,” instance counts, and the film’s machine-mind language.</td></tr>
+            <tr><td>User control</td><td>3/4</td><td>Strong navigation and motion control; the richest canvas play remains pointer-led.</td></tr>
+            <tr><td>Consistency</td><td>4/4</td><td>Typography, colour, controls, and spatial language are unusually cohesive.</td></tr>
+            <tr><td>Error prevention</td><td>3/4</td><td>Good defaults and boundaries; delivery constraints for the film are not encoded.</td></tr>
+            <tr><td>Recognition</td><td>3/4</td><td>Journey stays visible; Greek indices and tiny gallery labels ask the audience to decode mood.</td></tr>
+            <tr><td>Flexibility</td><td>3/4</td><td>Direct links and reduced motion are strong; Forms has no efficient route through it.</td></tr>
+            <tr><td>Minimalism</td><td>3/4</td><td>Strong visual hierarchy, but Forms expands and the film finale accumulates systems.</td></tr>
+            <tr><td>Error recovery</td><td>3/4</td><td>Static fallbacks and retry exist; retry reloads the whole experience.</td></tr>
+            <tr><td>Help</td><td>2/4</td><td>Interaction cues exist; Detail, transcripts, and delivery context need explanation.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="verdicts-title">
+      <div class="section-head">
+        <span class="section-index">02 · Verdicts</span>
+        <div>
+          <h2 id="verdicts-title">Authored, not generic. But spectacle is carrying unfinished ideas.</h2>
+        </div>
+      </div>
+
+      <div class="triptych">
+        <article class="judgement">
+          <h3>Design</h3>
+          <p><strong>The full experience passes the AI-slop test.</strong> Petrona, the mineral palette, chapter-specific simulations, and confident black fields create a real science-gallery identity. Reduced motion slips toward the familiar serif-on-black editorial lane because the visual specimens become too sparse.</p>
+        </article>
+        <article class="judgement">
+          <h3>Story</h3>
+          <p><strong>The webpage has the better thesis.</strong> “Each form brings something into view and lets something else fall away” is specific and defensible. The film turns that into a linear ascent from sand to mind, then spends too little time earning the conceptual leap.</p>
+        </article>
+        <article class="judgement">
+          <h3>Implementation</h3>
+          <p><strong>The engineering is production-minded.</strong> Semantic fallbacks, lazy engines, native controls, focus states, error recovery, and a 66 KB gzip entry are excellent. The biggest confirmed runtime defect is reading-position loss when Motion is switched off on mobile.</p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="story-title">
+      <div class="section-head">
+        <span class="section-index">03 · Story</span>
+        <div>
+          <h2 id="story-title">The webpage refracts. The film ascends.</h2>
+          <p>The first is a plural argument about interfaces. The second is a familiar technological genealogy. Their shared visual language disguises a genuine narrative disagreement.</p>
+        </div>
+      </div>
+
+      <div class="story-split">
+        <div class="story-lane story-lane--web">
+          <h3>Webpage · agency</h3>
+          <div class="story-step"><span>Shape</span><p><strong>Question:</strong> what form do we give intelligence?</p></div>
+          <div class="story-step"><span>Touch</span><p><strong>Embodiment:</strong> the word scatters and reconstitutes under the hand.</p></div>
+          <div class="story-step"><span>Forms</span><p><strong>Plurality:</strong> five interfaces make one screen feel like five machines.</p></div>
+          <div class="story-step"><span>Scent</span><p><strong>Extension:</strong> sensing moves beyond image and language.</p></div>
+          <div class="story-step"><span>Shift</span><p><strong>Instability:</strong> structure exists only while matter agrees to hold.</p></div>
+          <div class="story-step"><span>Vision</span><p><strong>Claim:</strong> every interface reveals something and hides something else.</p></div>
+        </div>
+
+        <div class="story-lane story-lane--video">
+          <h3>Film · causality</h3>
+          <div class="story-step"><span>00–17s</span><p><strong>Matter:</strong> sand becomes wafer, light etches circuits, electricity activates the machine.</p></div>
+          <div class="story-step"><span>18–25s</span><p><strong>Life:</strong> current becomes brain and DNA—the strongest reveal in the film.</p></div>
+          <div class="story-step"><span>26–37s</span><p><strong>Biology:</strong> swarm, pheromone, receptor, and signal preserve a legible causal baton.</p></div>
+          <div class="story-step"><span>38–43s</span><p><strong>Accumulation:</strong> ribbons, phyllotaxis, city, DNA, insects, and branches compete.</p></div>
+          <div class="story-step"><span>43–48s</span><p><strong>Claim:</strong> “A mind can inhabit senses we do not have.”</p></div>
+          <p class="story-break">The coda changes the subject from interface to consciousness.</p>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="quadrant-title">
+      <div class="section-head">
+        <span class="section-index">04 · Priority</span>
+        <div>
+          <h2 id="quadrant-title">Move fast on meaning. Spend deeply on embodiment.</h2>
+          <p>Audience impact is the horizontal axis; delivery effort is vertical. Select a point for the recommendation and exact score.</p>
+        </div>
+      </div>
+
+      <div class="plot-shell">
+        <div>
+          <div class="quadrant" role="group" aria-label="Improvement priority quadrant">
+            <span class="quadrant-label tl">Defer</span>
+            <span class="quadrant-label tr">Flagship bets</span>
+            <span class="quadrant-label bl">Finish &amp; polish</span>
+            <span class="quadrant-label br">Move now</span>
+            <span class="axis-label x">Audience impact →</span>
+            <span class="axis-label y">Delivery effort →</span>
+
+            <button class="point" style="--x:94;--y:17" data-key="A" data-medium="Video" aria-pressed="true" aria-label="A, rewrite the film ending, video, impact 94, effort 17">A</button>
+            <button class="point" style="--x:72;--y:18" data-key="B" data-medium="Webpage" aria-pressed="false" aria-label="B, repair the motion-toggle anchor, webpage, impact 72, effort 18">B</button>
+            <button class="point" style="--x:86;--y:63" data-key="C" data-medium="Webpage" aria-pressed="false" aria-label="C, give reduced motion full art direction, webpage, impact 86, effort 63">C</button>
+            <button class="point" style="--x:82;--y:43" data-key="D" data-medium="Webpage" aria-pressed="false" aria-label="D, compress Forms to three essentials, webpage, impact 82, effort 43">D</button>
+            <button class="point" style="--x:88;--y:58" data-key="E" data-medium="Video" aria-pressed="false" aria-label="E, keep one causal object in the final act, video, impact 88, effort 58">E</button>
+            <button class="point" style="--x:95;--y:84" data-key="F" data-medium="Cross-media" aria-pressed="false" aria-label="F, carry one particle from film into webpage, cross-media, impact 95, effort 84">F</button>
+            <button class="point" style="--x:67;--y:26" data-key="G" data-medium="Video" aria-pressed="false" aria-label="G, safe copy and accessible transcript, video, impact 67, effort 26">G</button>
+            <button class="point" style="--x:46;--y:12" data-key="H" data-medium="Webpage" aria-pressed="false" aria-label="H, rename Detail and remove developer labels, webpage, impact 46, effort 12">H</button>
+            <button class="point" style="--x:61;--y:34" data-key="I" data-medium="Video" aria-pressed="false" aria-label="I, shorter cut and lighter encode, video, impact 61, effort 34">I</button>
+            <button class="point" style="--x:91;--y:72" data-key="J" data-medium="Cross-media" aria-pressed="false" aria-label="J, expose what every interface reveals and hides, cross-media, impact 91, effort 72">J</button>
+          </div>
+          <div class="plot-legend" aria-label="Media legend">
+            <span><i class="swatch web" aria-hidden="true"></i>Webpage</span>
+            <span><i class="swatch video" aria-hidden="true"></i>Video</span>
+            <span><i class="swatch cross" aria-hidden="true"></i>Cross-media</span>
+          </div>
+        </div>
+
+        <aside class="plot-detail" aria-live="polite">
+          <strong class="plot-detail-code" id="plot-code">A</strong>
+          <h3 id="plot-title">Rewrite the film ending</h3>
+          <p id="plot-copy">Replace the machine-mind claim with the webpage’s interface thesis. Proposed line: “New senses bring a different machine into view.”</p>
+          <p class="plot-detail-meta"><span id="plot-medium">Video</span><span id="plot-impact">Impact 94</span><span id="plot-effort">Effort 17</span></p>
+        </aside>
+      </div>
+    </section>
+
+    <section aria-labelledby="recommendations-title">
+      <div class="section-head">
+        <span class="section-index">05 · Recommendations</span>
+        <div>
+          <h2 id="recommendations-title">Protect the strangeness. Make the argument exact.</h2>
+        </div>
+      </div>
+
+      <div class="recommendation-grid">
+        <div class="recommendation-list recommendation-list--web">
+          <h3>Webpage</h3>
+          <article class="rec"><span>01</span><div><h4>Make reduced motion a first-class gallery</h4><p>Author a static hero specimen and five genuinely different still compositions. Remove movement, not art direction.</p></div></article>
+          <article class="rec"><span>02</span><div><h4>Cut Forms from five proofs to three</h4><p>Keep Music, Scent-adjacent flocking, and one pattern study. Move the remainder into an optional “Explore more forms” atlas.</p></div></article>
+          <article class="rec"><span>03</span><div><h4>Show the blind spot of every interface</h4><p>Let each chapter reveal one new capability and one loss. The finale should feel earned because the trade-off has been experienced five times.</p></div></article>
+          <article class="rec"><span>04</span><div><h4>Preserve place when preferences change</h4><p>After Motion or Detail changes chapter height, restore the active heading below the masthead. Add a 390px Playwright regression test for the toggle.</p></div></article>
+          <article class="rec"><span>05</span><div><h4>Translate implementation language</h4><p>Rename “Detail full/lite” to “Graphics standard/low-power.” Replace “1,600 instances” and Greek indices with labels that describe the encounter.</p></div></article>
+          <article class="rec"><span>06</span><div><h4>Calm the conclusion</h4><p>Suppress the persistent current during Vision and reduce the finale field. The final sentence—not 900 motes plus a second particle layer—should own the scene.</p></div></article>
+        </div>
+
+        <div class="recommendation-list recommendation-list--video">
+          <h3>MP4</h3>
+          <article class="rec"><span>01</span><div><h4>Rewrite the final three copy beats</h4><p>Use “We translate that language into signal” → “Then build new interfaces with it” → “New senses bring a different machine into view.”</p></div></article>
+          <article class="rec"><span>02</span><div><h4>Keep one object alive through the coda</h4><p>Let the chemical signal become a single light filament. It may pass through music, pattern, and city, but those worlds should not all remain on screen.</p></div></article>
+          <article class="rec"><span>03</span><div><h4>Move time from shoreline to thesis</h4><p>Recover about two seconds from 00:00–00:05 and give the final reframing room to land. The ending currently introduces the biggest idea at the highest visual density.</p></div></article>
+          <article class="rec"><span>04</span><div><h4>Design for the player, not only the frame</h4><p>Keep indispensable copy 10–12% from top and bottom. Supply an SRT and transcript even though text is burned in; silent meaning still needs an accessible channel.</p></div></article>
+          <article class="rec"><span>05</span><div><h4>Render a delivery family</h4><p>Keep the 24 MB file as a master. Add a lighter 720×1280 MP4, a 12-second teaser, and a shorter GOP for better seeking.</p></div></article>
+          <article class="rec"><span>06</span><div><h4>Create an optional sound-on cut</h4><p>Make matter audible: granular shore, laser ticks, electric transients, neural pulse, chemical hiss. Preserve the silent master; sound should deepen, never carry, meaning.</p></div></article>
+        </div>
+      </div>
+
+      <aside class="cross-media">
+        <h3>One particle becomes the baton.</h3>
+        <p>The film follows its causal origin—shore, wafer, electricity, biology, chemistry—then ends as that same particle enters the webpage hero. The website becomes the laboratory where the audience touches its six transformations. Cinema supplies causality; interaction supplies agency.</p>
+      </aside>
+    </section>
+
+    <section aria-labelledby="roadmap-title">
+      <div class="section-head">
+        <span class="section-index">06 · Sequence</span>
+        <div>
+          <h2 id="roadmap-title">Make the cheap truths first. Then fund the unforgettable ones.</h2>
+        </div>
+      </div>
+
+      <div class="roadmap">
+        <article class="phase">
+          <h3>Now · 48 hours</h3>
+          <ul>
+            <li>Rewrite the film ending and “machine can learn” beat.</li>
+            <li>Repair the mobile motion-toggle anchor.</li>
+            <li>Rename Detail and remove instance-count copy.</li>
+            <li>Add safe-zone guides, SRT, and transcript.</li>
+          </ul>
+        </article>
+        <article class="phase">
+          <h3>Next · one sprint</h3>
+          <ul>
+            <li>Compress Forms to three essential instruments.</li>
+            <li>Author the reduced-motion hero and distinct chapter stills.</li>
+            <li>Recompose the film’s final 12 seconds around one signal.</li>
+            <li>Render lighter and shorter delivery variants.</li>
+          </ul>
+        </article>
+        <article class="phase">
+          <h3>Flagship · one release</h3>
+          <ul>
+            <li>Give the particle a persistent identity across film and site.</li>
+            <li>Make every chapter expose a capability and a blind spot.</li>
+            <li>Build the film-to-site handoff as one continuous encounter.</li>
+            <li>Compose the optional tactile sound world.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="evidence-title">
+      <div class="section-head">
+        <span class="section-index">07 · Evidence</span>
+        <div>
+          <h2 id="evidence-title">The implementation is healthier than the story.</h2>
+          <p>Independent design and evidence passes reviewed source, desktop/mobile layouts, reduced motion, the complete film timeline, encoding metadata, and automated checks.</p>
+        </div>
+      </div>
+
+      <div class="evidence-grid">
+        <div class="evidence-stat"><strong>66 KB</strong><span>initial JavaScript gzip · 150 KB budget</span></div>
+        <div class="evidence-stat"><strong>15 / 15</strong><span>executed Playwright checks passed · 3 intentionally skipped</span></div>
+        <div class="evidence-stat"><strong>0</strong><span>deterministic design-detector findings</span></div>
+        <div class="evidence-stat"><strong>48.0s</strong><span>1,440 frames · 30 fps · no audio stream</span></div>
+      </div>
+
+      <div class="evidence-notes">
+        <div>
+          <h3>Verified strengths</h3>
+          <p>Lint, 7 unit/source tests, production build, bundle budget, visual checks, and video TypeScript checks passed. No horizontal overflow appeared at 1280, 640, 390, or 320px. Reduced motion imported no canvases. The live page had no console, network, or page errors in the evidence pass.</p>
+        </div>
+        <div>
+          <h3>Confirmed defects and risks</h3>
+          <p>The mobile Motion toggle can place the active H2 at 26.9px while the masthead ends at 64px. The desktop masthead title is below the project’s 44px target. The film is 24.0 MB at 4.01 Mbps with 8.33-second keyframe spacing, and ffprobe reports <code>yuvj420p</code> despite a <code>yuv420p</code> render request.</p>
+        </div>
+        <div>
+          <h3>Test gap</h3>
+          <p>The committed Scent screenshot contains copy that no longer matches <code>src/content/chapters.ts</code>, yet the broad 1% pixel threshold can still pass. Assert thesis-critical copy semantically; screenshots alone are too blunt for editorial truth.</p>
+        </div>
+        <div>
+          <h3>Motion verdict</h3>
+          <p><strong>Needs revision before promotion.</strong> Subject-specific motion, deterministic film frames, and off-screen canvas gating are excellent. Final-object continuity, reduced-motion parity, player-safe copy, and preference continuity are not yet at the same level.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>Method: independent design-director and deterministic/runtime assessments, synthesised after both completed.</span>
+    <span>The Shape of Intelligence · cross-media review</span>
+  </footer>
+
+  <script>
+    const recommendations = {
+      A: { title: 'Rewrite the film ending', copy: 'Replace the machine-mind claim with the webpage’s interface thesis. Proposed line: “New senses bring a different machine into view.”', medium: 'Video', impact: 94, effort: 17 },
+      B: { title: 'Repair the motion-toggle anchor', copy: 'Preserve the active heading below the fixed masthead when Motion or Detail changes chapter height.', medium: 'Webpage', impact: 72, effort: 18 },
+      C: { title: 'Give reduced motion full art direction', copy: 'Author a static hero specimen and genuinely distinct still compositions. Remove motion, not identity.', medium: 'Webpage', impact: 86, effort: 63 },
+      D: { title: 'Compress Forms to three essentials', copy: 'Let three instruments prove the thesis; move the rest into an optional atlas instead of forcing a long demo corridor.', medium: 'Webpage', impact: 82, effort: 43 },
+      E: { title: 'Keep one causal object through the final act', copy: 'Allow a single chemical signal or light filament to pass through the final worlds without accumulating them all on screen.', medium: 'Video', impact: 88, effort: 58 },
+      F: { title: 'Carry one particle from film into webpage', copy: 'End the film as its causal particle enters the hero field. The site then becomes the place where the audience transforms it.', medium: 'Cross-media', impact: 95, effort: 84 },
+      G: { title: 'Add safe copy placement and a transcript', copy: 'Keep indispensable copy outside player chrome and provide SRT plus transcript for a silent, text-led master.', medium: 'Video', impact: 67, effort: 26 },
+      H: { title: 'Rename Detail and remove developer labels', copy: 'Use audience language such as Graphics standard/low-power and replace instance counts with encounter-focused gallery labels.', medium: 'Webpage', impact: 46, effort: 12 },
+      I: { title: 'Produce a shorter cut and lighter encode', copy: 'Keep the master, then add a 12-second teaser, 720×1280 delivery MP4, and shorter keyframe spacing.', medium: 'Video', impact: 61, effort: 34 },
+      J: { title: 'Expose what every interface reveals and hides', copy: 'Make capability and blind spot a repeated chapter mechanic so the finale is experienced before it is stated.', medium: 'Cross-media', impact: 91, effort: 72 }
+    };
+
+    const points = [...document.querySelectorAll('.point')];
+    const plotCode = document.getElementById('plot-code');
+    const plotTitle = document.getElementById('plot-title');
+    const plotCopy = document.getElementById('plot-copy');
+    const plotMedium = document.getElementById('plot-medium');
+    const plotImpact = document.getElementById('plot-impact');
+    const plotEffort = document.getElementById('plot-effort');
+
+    points.forEach((point) => {
+      point.addEventListener('click', () => {
+        const item = recommendations[point.dataset.key];
+        if (!item) return;
+        points.forEach((candidate) => candidate.setAttribute('aria-pressed', String(candidate === point)));
+        plotCode.textContent = point.dataset.key;
+        plotTitle.textContent = item.title;
+        plotCopy.textContent = item.copy;
+        plotMedium.textContent = item.medium;
+        plotImpact.textContent = `Impact ${item.impact}`;
+        plotEffort.textContent = `Effort ${item.effort}`;
+      });
+    });
+  </script>
+</body>
+</html>

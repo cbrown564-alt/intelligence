@@ -1,8 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { ChapterHead } from '@/components/ChapterHead';
+import { ChapterTradeoff } from '@/components/ChapterTradeoff';
+import { Reveal } from '@/components/Reveal';
+import { CHAPTER_BY_ID } from '@/content/chapters';
 import { isLiteExperience, startCanvas2D } from '@/lib/canvas';
 import { fbm2 } from '@/lib/noise';
-import { ChapterHead } from '@/components/ChapterHead';
-import { Reveal } from '@/components/Reveal';
 
 interface Molecule {
   x: number;
@@ -12,136 +14,127 @@ interface Molecule {
   life: number;
   maxLife: number;
   size: number;
-  ring: boolean;
+  trace: 0 | 1;
 }
 
-interface Structure {
-  x: number;
-  y: number;
-  r: number;
-  age: number;
-}
+const TRACE_COLORS = [
+  [134, 228, 202],
+  [232, 179, 106],
+] as const;
 
 export function SmellChapter() {
+  const chapter = CHAPTER_BY_ID.scent;
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const comparisonRef = useRef(false);
+  const [comparison, setComparison] = useState(false);
+
+  useEffect(() => {
+    comparisonRef.current = comparison;
+  }, [comparison]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     let molecules: Molecule[] = [];
-    let structures: Structure[] = [];
-    let lastSpawn = 0;
-
-    const stop = startCanvas2D(canvas, (ctx, w, h, t, p) => {
-      ctx.fillStyle = 'rgba(8,10,12,0.16)';
+    const stop = startCanvas2D(canvas, (ctx, w, h, t, pointer) => {
+      ctx.fillStyle = 'rgba(8,10,12,0.18)';
       ctx.fillRect(0, 0, w, h);
 
-      const ex = w * 0.16;
-      const ey = h * 0.55;
+      const emitters = [
+        { x: w * 0.13, y: h * 0.36, trace: 0 as const },
+        { x: w * 0.13, y: h * 0.7, trace: 1 as const },
+      ];
+      for (const emitter of emitters) {
+        const visibleColor = comparisonRef.current
+          ? TRACE_COLORS[emitter.trace]
+          : TRACE_COLORS[0];
+        const glow = ctx.createRadialGradient(
+          emitter.x,
+          emitter.y,
+          0,
+          emitter.x,
+          emitter.y,
+          72
+        );
+        glow.addColorStop(0, `rgba(${visibleColor.join(',')},0.2)`);
+        glow.addColorStop(1, `rgba(${visibleColor.join(',')},0)`);
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(emitter.x, emitter.y, 72, 0, Math.PI * 2);
+        ctx.fill();
 
-      // emitter glow
-      const grad = ctx.createRadialGradient(ex, ey, 0, ex, ey, 90);
-      grad.addColorStop(0, 'rgba(111,224,195,0.20)');
-      grad.addColorStop(1, 'rgba(111,224,195,0)');
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(ex, ey, 90, 0, Math.PI * 2);
-      ctx.fill();
-
-      // emit
-      for (let i = 0; i < 6; i++) {
-        if (molecules.length < (isLiteExperience() ? 320 : 750)) {
+        for (let index = 0; index < 3; index += 1) {
+          if (molecules.length >= (isLiteExperience() ? 260 : 620)) break;
           molecules.push({
-            x: ex + (Math.random() - 0.5) * 14,
-            y: ey + (Math.random() - 0.5) * 14,
-            vx: 0.6 + Math.random() * 0.8,
-            vy: (Math.random() - 0.5) * 0.6,
+            x: emitter.x + (Math.random() - 0.5) * 12,
+            y: emitter.y + (Math.random() - 0.5) * 12,
+            vx: 0.65 + Math.random() * 0.75,
+            vy: (Math.random() - 0.5) * 0.35,
             life: 0,
-            maxLife: 7 + Math.random() * 7,
-            size: 1 + Math.random() * 2.4,
-            ring: Math.random() < 0.3,
+            maxLife: 7 + Math.random() * 6,
+            size: 1 + Math.random() * 2.2,
+            trace: emitter.trace,
           });
         }
       }
 
-      // molecular structures bloom in the plume's path
-      if (t - lastSpawn > 2.2 && structures.length < 5) {
-        lastSpawn = t;
-        structures.push({
-          x: w * (0.4 + Math.random() * 0.5),
-          y: h * (0.2 + Math.random() * 0.6),
-          r: 12 + Math.random() * 12,
-          age: 0,
-        });
-      }
-      structures = structures.filter((s) => s.age < 4);
-      for (const s of structures) {
-        s.age += 0.016;
-        const alpha =
-          s.age < 1 ? s.age : s.age > 3 ? Math.max(0, 1 - (s.age - 3)) : 1;
-        ctx.strokeStyle = `rgba(111,224,195,${alpha * 0.4})`;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        for (let k = 0; k <= 6; k++) {
-          const a = (k / 6) * Math.PI * 2 + s.age * 0.1;
-          const px = s.x + Math.cos(a) * s.r;
-          const py = s.y + Math.sin(a) * s.r;
-          if (k === 0) ctx.moveTo(px, py);
-          else ctx.lineTo(px, py);
-        }
-        ctx.stroke();
-        for (let k = 0; k < 6; k++) {
-          const a = (k / 6) * Math.PI * 2 + s.age * 0.1;
-          const px = s.x + Math.cos(a) * s.r;
-          const py = s.y + Math.sin(a) * s.r;
-          ctx.fillStyle = `rgba(237,231,218,${alpha * 0.7})`;
-          ctx.beginPath();
-          ctx.arc(px, py, 1.6, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
+      molecules = molecules.filter((molecule) =>
+        molecule.life < molecule.maxLife && molecule.x < w + 24
+      );
+      for (const molecule of molecules) {
+        molecule.life += 0.016;
+        const crossingPull = (h * 0.53 - molecule.y) * 0.00075;
+        const current = fbm2(
+          molecule.x * 0.0035,
+          molecule.y * 0.0035 + t * 0.02
+        ) * Math.PI * 4;
+        molecule.vx += Math.cos(current) * 0.11 + 0.02;
+        molecule.vy += Math.sin(current) * 0.1 + crossingPull;
 
-      // plume
-      molecules = molecules.filter((m) => m.life < m.maxLife && m.x < w + 30);
-      for (const m of molecules) {
-        m.life += 0.016;
-        const a =
-          fbm2(m.x * 0.0035, m.y * 0.0035 + t * 0.02) * Math.PI * 4;
-        m.vx += Math.cos(a) * 0.12 + 0.02;
-        m.vy += Math.sin(a) * 0.12;
-        if (p.active) {
-          const dx = m.x - p.x;
-          const dy = m.y - p.y;
-          const d = Math.hypot(dx, dy);
-          if (d < 150 && d > 1) {
-            // stir: tangential swirl
-            const f = ((150 - d) / 150) * 0.9;
-            m.vx += (-dy / d) * f;
-            m.vy += (dx / d) * f;
+        if (pointer.active) {
+          const dx = molecule.x - pointer.x;
+          const dy = molecule.y - pointer.y;
+          const distance = Math.hypot(dx, dy);
+          if (distance < 150 && distance > 1) {
+            const force = ((150 - distance) / 150) * 0.85;
+            molecule.vx += (-dy / distance) * force;
+            molecule.vy += (dx / distance) * force;
           }
         }
-        m.vx *= 0.985;
-        m.vy *= 0.985;
-        m.x += m.vx;
-        m.y += m.vy;
 
-        const fade =
-          m.life < 1 ? m.life : Math.max(0, 1 - (m.life - (m.maxLife - 2)) / 2);
-        const green = 0.45 + 0.4 * Math.sin(m.x * 0.01 + t);
-        ctx.strokeStyle = `rgba(111,224,195,${fade * 0.55})`;
-        ctx.fillStyle = `rgba(${m.ring ? '111,224,195' : '180,240,220'},${
-          fade * (0.35 + green * 0.65)
-        })`;
-        if (m.ring) {
-          ctx.lineWidth = 0.8;
-          ctx.beginPath();
-          ctx.arc(m.x, m.y, m.size + 1.6, 0, Math.PI * 2);
-          ctx.stroke();
-        }
+        molecule.vx *= 0.986;
+        molecule.vy *= 0.986;
+        molecule.x += molecule.vx;
+        molecule.y += molecule.vy;
+
+        const fade = molecule.life < 1
+          ? molecule.life
+          : Math.max(0, 1 - (molecule.life - (molecule.maxLife - 2)) / 2);
+        const color = comparisonRef.current
+          ? TRACE_COLORS[molecule.trace]
+          : TRACE_COLORS[0];
+        ctx.fillStyle = `rgba(${color.join(',')},${fade * 0.68})`;
         ctx.beginPath();
-        ctx.arc(m.x, m.y, m.size * 0.95, 0, Math.PI * 2);
+        ctx.arc(molecule.x, molecule.y, molecule.size, 0, Math.PI * 2);
         ctx.fill();
+      }
+
+      const sensorX = w * 0.88;
+      ctx.strokeStyle = comparisonRef.current
+        ? 'rgba(237,231,218,0.78)'
+        : 'rgba(134,228,202,0.72)';
+      ctx.lineWidth = comparisonRef.current ? 2 : 1;
+      ctx.beginPath();
+      ctx.moveTo(sensorX, h * 0.22);
+      ctx.lineTo(sensorX, h * 0.82);
+      ctx.stroke();
+      if (comparisonRef.current) {
+        ctx.strokeStyle = 'rgba(232,179,106,0.72)';
+        ctx.beginPath();
+        ctx.moveTo(sensorX + 12, h * 0.22);
+        ctx.lineTo(sensorX + 12, h * 0.82);
+        ctx.stroke();
       }
     });
 
@@ -149,7 +142,7 @@ export function SmellChapter() {
   }, []);
 
   return (
-    <section id="scent" className="relative overflow-hidden" style={{ background: '#080a0c' }}>
+    <section id="scent" className="scent-chapter relative overflow-hidden">
       <div className="relative mx-auto max-w-7xl px-6 pt-28 md:pt-36">
         <ChapterHead
           title={
@@ -157,27 +150,49 @@ export function SmellChapter() {
               What can a machine <em className="text-sea">smell</em>?
             </>
           }
-          lede="A scent leaves no image. It drifts, thins, mingles, and disappears. Move through the plume and watch the invisible take shape."
+          lede="Two chemical traces cross in the air. A single receptor reports one source with confidence. Compare another channel to find what the first reading merged."
         />
       </div>
 
-      <div className="relative h-[58vh] md:h-[64vh] mt-6">
+      <div className="scent-field relative mt-8 h-[58vh] md:h-[64vh]">
         <canvas ref={canvasRef} className="canvas-cover touch-pan" aria-hidden="true" />
-        <div className="pointer-events-none absolute bottom-5 left-6 flex items-center gap-3">
-          <span className="font-mono-label text-xs tracking-[0.12em] text-sea uppercase">
-            move through the chemical plume
-          </span>
-          <span className="h-px w-10 bg-sea/30" />
+        <div className="scent-reading" aria-live="polite">
+          <span>{comparison ? 'Two-channel comparison' : 'Single-channel reading'}</span>
+          <strong>
+            {comparison ? 'Two traces are crossing' : 'One source detected'}
+          </strong>
+          <p>
+            {comparison
+              ? 'The first reading merged signals that this comparison separates.'
+              : 'High confidence. Incomplete interpretation.'}
+          </p>
         </div>
+        <p className="scent-field__cue">Pointer: stir the crossing plumes</p>
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-6 py-24">
+      <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-28">
         <Reveal>
-          <p className="max-w-xl text-sm leading-relaxed text-paper/70 font-light">
-            To smell is to read a field in motion. Here, scattered traces become{' '}
-            <span className="text-sea">a pattern you can disturb</span>. The plume
-            never holds still long enough to become a picture.
-          </p>
+          <div className="scent-analysis">
+            <div>
+              <p>
+                The first receptor responds to a molecule shared by both traces. Its
+                reading is real, but its conclusion is wrong. A second channel reveals
+                the mixture.
+              </p>
+              <button
+                type="button"
+                className="scent-analysis__action"
+                aria-pressed={comparison}
+                onClick={() => setComparison((value) => !value)}
+              >
+                {comparison ? 'Return to the first reading' : 'Compare a second channel'}
+              </button>
+            </div>
+            <ChapterTradeoff
+              capability={chapter.capability}
+              blindSpot={chapter.blindSpot}
+            />
+          </div>
         </Reveal>
       </div>
     </section>

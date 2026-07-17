@@ -32,6 +32,49 @@ function initialQuality(): QualityMode {
   return nav.connection?.saveData || (nav.deviceMemory ?? 8) < 4 ? 'lite' : 'full';
 }
 
+function preserveActiveHeading(change: () => void) {
+  const masthead = document.querySelector<HTMLElement>('.masthead');
+  const mastheadBottom = masthead?.getBoundingClientRect().bottom ?? 0;
+  const headings = Array.from(document.querySelectorAll<HTMLElement>('section[id] h1, section[id] h2'));
+  const heading = headings.reduce<HTMLElement | null>((closest, candidate) => {
+    if (!closest) return candidate;
+    const candidateDistance = Math.abs(candidate.getBoundingClientRect().top - mastheadBottom);
+    const closestDistance = Math.abs(closest.getBoundingClientRect().top - mastheadBottom);
+    return candidateDistance < closestDistance ? candidate : closest;
+  }, null);
+  const chapterId = heading?.closest<HTMLElement>('section[id]')?.id;
+  const targetTop = masthead
+    ? Math.max(heading?.getBoundingClientRect().top ?? 0, masthead.getBoundingClientRect().bottom + 16)
+    : heading?.getBoundingClientRect().top ?? 0;
+
+  change();
+  if (!chapterId) return;
+
+  let frame = 0;
+  const restore = () => {
+    const currentHeading = document.querySelector<HTMLElement>(
+      `#${CSS.escape(chapterId)} h1, #${CSS.escape(chapterId)} h2`
+    );
+    if (!currentHeading) return;
+    const delta = currentHeading.getBoundingClientRect().top - targetTop;
+    if (Math.abs(delta) > 1) window.scrollBy(0, delta);
+  };
+  const settle = () => {
+    restore();
+    frame = window.requestAnimationFrame(restore);
+  };
+  frame = window.requestAnimationFrame(settle);
+
+  const main = document.querySelector('main');
+  const observer = new ResizeObserver(restore);
+  if (main) observer.observe(main);
+  window.setTimeout(() => {
+    observer.disconnect();
+    window.cancelAnimationFrame(frame);
+    restore();
+  }, 1200);
+}
+
 export function ExperiencePreferencesProvider({ children }: { children: ReactNode }) {
   const [motion, setMotion] = useState<MotionMode>(initialMotion);
   const [quality, setQuality] = useState<QualityMode>(initialQuality);
@@ -67,7 +110,7 @@ export function ExperienceControls() {
       type="button"
       className="experience-control"
       aria-pressed={motion === 'full'}
-      onClick={() => setMotion(motion === 'full' ? 'reduced' : 'full')}
+      onClick={() => preserveActiveHeading(() => setMotion(motion === 'full' ? 'reduced' : 'full'))}
     >
       <span className="experience-control__label">Motion</span>{' '}
       <span>{motion === 'full' ? 'on' : 'off'}</span>
@@ -76,10 +119,10 @@ export function ExperienceControls() {
       type="button"
       className="experience-control"
       aria-pressed={quality === 'full'}
-      onClick={() => setQuality(quality === 'full' ? 'lite' : 'full')}
+      onClick={() => preserveActiveHeading(() => setQuality(quality === 'full' ? 'lite' : 'full'))}
     >
-      <span className="experience-control__label">Detail</span>{' '}
-      <span>{quality}</span>
+      <span className="experience-control__label">Graphics</span>{' '}
+      <span>{quality === 'full' ? 'standard' : 'low power'}</span>
     </button>
     </div>
   );

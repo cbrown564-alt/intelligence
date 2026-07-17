@@ -83,8 +83,9 @@ test('a distant chapter jump settles after interactive chapters expand', async (
 
   await expect(page).toHaveURL(/#vision$/)
   await expect(page.locator('#vision')).toBeInViewport({
-    ratio: testInfo.project.name === 'compact' ? 0.4 : 0.5,
+    ratio: testInfo.project.name === 'compact' ? 0.3 : 0.5,
   })
+  await expect(page.locator('#vision h2')).toBeInViewport()
   if (testInfo.project.name === 'desktop') {
     await expect(navigation.getByRole('link', { name: '06 Vision' })).toHaveAttribute(
       'aria-current',
@@ -93,4 +94,71 @@ test('a distant chapter jump settles after interactive chapters expand', async (
   } else {
     await expect(navigation.locator('summary')).toContainText('Vision')
   }
+})
+
+test('preference changes preserve the active mobile heading below the masthead', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile', 'The regression was observed at 390px')
+  await page.addInitScript(() => {
+    window.localStorage.setItem('shape-motion', 'full')
+    window.localStorage.setItem('shape-quality', 'lite')
+  })
+  await page.goto('/#scent')
+  await expect(page.locator('#scent canvas')).toHaveCount(1, { timeout: 5_000 })
+
+  await page.getByRole('button', { name: /Motion on/i }).click()
+  await expect(page.getByRole('button', { name: /Motion off/i })).toBeVisible()
+
+  const mastheadBottom = await page.locator('.masthead').evaluate(
+    (element) => element.getBoundingClientRect().bottom
+  )
+  await expect.poll(() => page.locator('#scent h2').evaluate(
+    (element) => element.getBoundingClientRect().top
+  )).toBeGreaterThanOrEqual(mastheadBottom + 16)
+})
+
+test('Scent makes the misreading recoverable without pointer input', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop', 'One viewport covers the discrete control')
+  await page.addInitScript(() => {
+    window.localStorage.setItem('shape-motion', 'full')
+    window.localStorage.setItem('shape-quality', 'lite')
+  })
+  await page.goto('/#scent')
+
+  await expect(page.getByText('One source detected')).toBeVisible()
+  await page.getByRole('button', { name: 'Compare a second channel' }).focus()
+  await page.keyboard.press('Enter')
+
+  await expect(page.getByText('Two traces are crossing')).toBeVisible()
+  await expect(page.getByText(/first reading merged signals/i)).toBeVisible()
+  await page.evaluate(() => window.history.replaceState(null, '', window.location.pathname))
+  await page.locator('.scent-field').evaluate((element) =>
+    element.scrollIntoView({ block: 'center' })
+  )
+  await page.screenshot({ path: testInfo.outputPath('scent-comparison.png') })
+})
+
+test('Forms and Vision keep distinct enhanced compositions', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop', 'Desktop captures the complete foreground compositions')
+  await page.addInitScript(() => {
+    window.localStorage.setItem('shape-motion', 'full')
+    window.localStorage.setItem('shape-quality', 'lite')
+  })
+
+  await page.goto('/#forms')
+  await expect(page.locator('#forms canvas')).toHaveCount(3, { timeout: 5_000 })
+  await expect(page.getByRole('button', { name: 'Scatter the flock' })).toBeVisible()
+  await page.evaluate(() => window.history.replaceState(null, '', window.location.pathname))
+  await page.locator('#forms .instrument-rack').evaluate((element) =>
+    element.scrollIntoView({ block: 'start' })
+  )
+  await page.screenshot({ path: testInfo.outputPath('forms-three-instruments.png') })
+
+  await page.goto('/#vision')
+  await expect(page.locator('#vision canvas')).toHaveCount(1, { timeout: 5_000 })
+  await expect(page.getByRole('heading', { name: 'Every interface is a partial view.' })).toBeVisible()
+  await page.evaluate(() => window.history.replaceState(null, '', window.location.pathname))
+  await page.locator('#vision .finale-copy').evaluate((element) =>
+    element.scrollIntoView({ block: 'start' })
+  )
+  await page.screenshot({ path: testInfo.outputPath('vision-quiet-conclusion.png') })
 })

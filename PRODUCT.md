@@ -4,6 +4,8 @@
 
 The Shape of Intelligence is a visual essay that makes machine intelligence feel material, plural, and shaped by human choices. It argues through interaction as well as prose.
 
+Its governing claim is: intelligence appears different through different forms of encounter; every form reveals something and obscures something else.
+
 ## Audience
 
 - Curious general readers who know AI mainly through chat interfaces.
@@ -19,8 +21,10 @@ A reader can understand the complete argument without WebGL, canvas motion, audi
 1. Meet the opening question and understand how to proceed.
 2. Move through six clearly named chapters.
 3. Follow one field of matter as it becomes force, signal, chemical, structure, and light.
-4. Optionally disturb that field and interact with simulations that embody each chapter's idea.
-5. Leave with the sense that intelligence changes with the form of the encounter.
+4. See one capability and one blind spot in every encounter.
+5. Experience Scent's bounded misreading and use a second channel to recover from it.
+6. Optionally disturb the field and use simulations that deepen each chapter's idea.
+7. Leave with the sense that intelligence changes with the form of the encounter.
 
 ## Non-goals
 

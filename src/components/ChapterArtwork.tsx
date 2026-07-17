@@ -31,7 +31,7 @@ export function ChapterArtwork({ chapterId }: { chapterId: ArtworkId }) {
   if (chapterId === 'forms') {
     return (
       <div className="chapter-artwork chapter-artwork--forms" data-static-artwork="forms">
-        {['rhythm', 'interpretation', 'pattern', 'network', 'flock'].map((form, index) => (
+        {['rhythm', 'pattern', 'flock'].map((form, index) => (
           <span key={form} data-form={form} style={indexedStyle(index)}>
             <i />
           </span>
@@ -43,13 +43,20 @@ export function ChapterArtwork({ chapterId }: { chapterId: ArtworkId }) {
   if (chapterId === 'scent') {
     return (
       <div className="chapter-artwork chapter-artwork--scent" data-static-artwork="scent">
-        <span className="scent-study__emitter" />
-        <div className="scent-study__plume">
-          {Array.from({ length: 24 }, (_, index) => (
+        <span className="scent-study__emitter scent-study__emitter--upper" />
+        <span className="scent-study__emitter scent-study__emitter--lower" />
+        <div className="scent-study__plume scent-study__plume--upper">
+          {Array.from({ length: 18 }, (_, index) => (
+            <i key={index} style={indexedStyle(index)} />
+          ))}
+        </div>
+        <div className="scent-study__plume scent-study__plume--lower">
+          {Array.from({ length: 18 }, (_, index) => (
             <i key={index} style={indexedStyle(index)} />
           ))}
         </div>
         <span className="scent-study__sensor" />
+        <span className="scent-study__reading">one reading / two traces</span>
       </div>
     );
   }

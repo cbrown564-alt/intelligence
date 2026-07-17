@@ -19,7 +19,7 @@ describe('The Shape of Intelligence', () => {
     expect(
       screen.getByRole('heading', { name: 'What is the shape of intelligence?' })
     ).toBeVisible()
-    expect(screen.getByText(/pattern caught by a sensor/i)).toBeVisible()
+    expect(screen.getByText(/what does each form reveal/i)).toBeVisible()
     expect(screen.getByRole('heading', { name: 'Can we touch it?' })).toBeVisible()
     expect(
       screen.getByRole('heading', { name: 'What can a machine smell?' })
@@ -28,6 +28,8 @@ describe('The Shape of Intelligence', () => {
     expect(document.querySelector('.matter-current canvas')).not.toBeInTheDocument()
     expect(document.querySelectorAll('.matter-atlas span')).toHaveLength(6)
     expect(document.querySelectorAll('[data-static-artwork]')).toHaveLength(5)
+    expect(screen.getAllByText('Reveals')).toHaveLength(5)
+    expect(screen.getAllByText('Obscures')).toHaveLength(5)
     expect(
       new Set(
         Array.from(document.querySelectorAll('[data-static-artwork]')).map((node) =>
@@ -46,7 +48,7 @@ describe('The Shape of Intelligence', () => {
     expect(screen.getAllByRole('link', { name: /Shape/i }).length).toBeGreaterThan(0)
 
     const motion = screen.getByRole('button', { name: /Motion off/i })
-    const detail = screen.getByRole('button', { name: /Detail lite/i })
+    const detail = screen.getByRole('button', { name: /Graphics low power/i })
     expect(motion).toHaveAttribute('aria-pressed', 'false')
     expect(detail).toHaveAttribute('aria-pressed', 'false')
 
@@ -57,7 +59,7 @@ describe('The Shape of Intelligence', () => {
       'aria-pressed',
       'true'
     )
-    expect(screen.getByRole('button', { name: /Detail full/i })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: /Graphics standard/i })).toHaveAttribute(
       'aria-pressed',
       'true'
     )

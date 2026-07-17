@@ -29,10 +29,12 @@ Sand signals the central material metaphor and current navigation state. Violet 
 
 Each chapter has two layers:
 
-1. Semantic layer: title, summary, explanation, source notes, and a static abstract composition.
+1. Semantic layer: title, summary, explanation, capability, blind spot, source notes when needed, and a static abstract composition.
 2. Enhancement layer: a lazy-loaded canvas, WebGL, audio, or scroll interaction.
 
 The semantic layer owns meaning. The enhancement layer may be absent, delayed, paused, or replaced without changing the argument.
+
+Scent is the representative misreading: two chemical traces cross, one receptor merges them, and a second channel corrects the interpretation. The static composition and enhanced interaction must carry the same consequence and recovery.
 
 ## Material continuity
 
@@ -48,6 +50,8 @@ One small, persistent particle field connects the chapters. It does not introduc
 Scroll supplies the transformation progress rather than merely triggering entrances. Pointer proximity bends the field; pressing creates a stronger disturbance; release lets it reform. The hero and conclusion lower the field's opacity because their central compositions and prose already own those scenes.
 
 Reduced motion replaces the current with a quiet six-point material atlas. No canvas is created.
+
+The film-to-web handoff uses one horizontal filament with a central bead. It is visible in the final film frame and the webpage hero, but stays behind the governing copy.
 
 ## Composition
 
@@ -73,6 +77,7 @@ Do not restore identical card grids, repeated numbered heading markers, decorati
 ## Interaction
 
 - All real controls are native buttons or links.
+- Discrete thesis-critical interactions have a keyboard-operable native control.
 - Pointer-only canvas play is optional.
 - Focus is visible and uses the sand color.
 - Touch targets are at least 44 px.

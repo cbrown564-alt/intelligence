@@ -13,6 +13,8 @@ export interface ChapterSummary {
   title: string;
   summary: string;
   detail: string;
+  capability: string;
+  blindSpot: string;
   accent: 'sand' | 'violet' | 'sea' | 'rose';
 }
 
@@ -23,9 +25,11 @@ export const CHAPTERS: ChapterSummary[] = [
     shortLabel: 'Shape',
     title: 'What is the shape of intelligence?',
     summary:
-      'It arrives as light on glass, a pulse of sound, or a pattern caught by a sensor.',
+      'We give a signal an interface, then meet the machine through what that interface can reveal.',
     detail:
-      'A sphere becomes a knot, then a cloud. Matter becomes signal; signal becomes form.',
+      'Change the encounter and a different machine comes into view. Every form reveals something and obscures something else.',
+    capability: 'A contour makes boundary and relation legible.',
+    blindSpot: 'A clean outline hides the material, scale, and history inside it.',
     accent: 'sand',
   },
   {
@@ -36,18 +40,22 @@ export const CHAPTERS: ChapterSummary[] = [
     summary:
       'A word scatters beneath your hand, carries your momentum, and finds itself again.',
     detail:
-      'No grain holds the word. Together, the scattered pieces keep finding their way back.',
+      'Force makes response, resistance, and recovery visible. It cannot explain why the pieces return.',
+    capability: 'Force reveals response, resistance, and recovery.',
+    blindSpot: 'The hand feels motion but not the rule that draws the pieces back.',
     accent: 'sand',
   },
   {
     id: 'forms',
     label: 'Many forms',
     shortLabel: 'Forms',
-    title: 'Rhythm. Interpretation. Pattern. Connection. Flock.',
+    title: 'Rhythm. Pattern. Flock.',
     summary:
-      'Five instruments turn touch into rhythm, gesture, pattern, connection, and flocking.',
+      'Three instruments turn one screen into a string, a spiral, and a flock.',
     detail:
-      'Each one gives the hand something different to do and the eye something different to follow.',
+      'Each instrument magnifies one behaviour and discards the rest.',
+    capability: 'Different instruments expose frequency, repeated order, and collective motion.',
+    blindSpot: 'Each instrument reduces the signal to the features it can measure.',
     accent: 'violet',
   },
   {
@@ -56,9 +64,11 @@ export const CHAPTERS: ChapterSummary[] = [
     shortLabel: 'Scent',
     title: 'What can a machine smell?',
     summary:
-      'A scent drifts, thins, mingles, and disappears. The plume gives the invisible a shape.',
+      'A chemical trace drifts, thins, mingles, and disappears. A sensor gives the invisible a reading.',
     detail:
-      'Move through the field and the scattered traces gather into a pattern you can disturb.',
+      'One receptor can confuse crossing plumes. Compare a second channel to see what the first reading missed.',
+    capability: 'Chemical sensing detects traces beyond image and sound.',
+    blindSpot: 'A single reading can point to the wrong source when traces mix or drift.',
     accent: 'sea',
   },
   {
@@ -69,18 +79,22 @@ export const CHAPTERS: ChapterSummary[] = [
     summary:
       'Towers rise from dust. Streets hold for a moment. Then the structure loosens and begins again.',
     detail:
-      'Nothing settles into a final state. The city exists only while its pieces agree to hold.',
+      'The skyline makes local rules visible at scale, but hides the individual pieces and costs inside the pattern.',
+    capability: 'Procedural rules reveal how local agreements form a large structure.',
+    blindSpot: 'The skyline hides the pieces and costs displaced by the pattern.',
     accent: 'violet',
   },
   {
     id: 'vision',
     label: 'Vision',
     shortLabel: 'Vision',
-    title: 'The interface shapes the encounter.',
+    title: 'Every interface is a partial view.',
     summary:
-      'A voice, a gesture, a chemical trace, a field of light: each form reveals a different machine.',
+      'A voice, a gesture, a chemical trace, a field of light: each encounter reveals a different machine.',
     detail:
-      'Change the encounter and the machine appears to change with it.',
+      'No synthesis is complete. The form that gathers the views also decides what falls away.',
+    capability: 'Comparison reveals that no single interface is the machine.',
+    blindSpot: 'A synthesis can falsely suggest that the whole machine is finally in view.',
     accent: 'sand',
   },
 ];

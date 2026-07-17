@@ -32,6 +32,7 @@ export function Hero() {
       ) : null}
 
       <div className="hero-vignette" aria-hidden="true" />
+      <div className="hero-signal" aria-hidden="true"><i /></div>
 
       <div className="hero-copy">
         <p className="hero-kicker">A visual essay in matter, motion, and machine intelligence</p>
@@ -46,7 +47,11 @@ export function Hero() {
         </h1>
         <p className="hero-lede">
           It arrives as light on glass. A pulse of sound. A pattern caught by
-          a sensor. We give it a form, then meet it there.
+          a sensor. A contour brings boundary into view while material and
+          history fall away.
+        </p>
+        <p className="hero-question">
+          What does each form reveal—and what does it hide?
         </p>
         <p className="hero-sequence" aria-label="Matter becomes signal becomes form">
           <span>Matter</span><i>becomes</i><span>signal</span><i>becomes</i>

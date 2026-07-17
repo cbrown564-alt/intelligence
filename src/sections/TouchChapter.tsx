@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { isLiteExperience, startCanvas2D } from '@/lib/canvas';
 import { ChapterHead } from '@/components/ChapterHead';
+import { ChapterTradeoff } from '@/components/ChapterTradeoff';
 import { Reveal } from '@/components/Reveal';
+import { CHAPTER_BY_ID } from '@/content/chapters';
 
 interface Grain {
   x: number;
@@ -17,6 +19,7 @@ interface Grain {
 const COLORS = ['#e8b36a', '#e8b36a', '#ede7da', '#a99bff', '#a99bff', '#6fe0c3'];
 
 export function TouchChapter() {
+  const chapter = CHAPTER_BY_ID.touch;
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -153,6 +156,12 @@ export function TouchChapter() {
             going. Together, the scattered pieces keep finding{' '}
             <span className="text-sand">their way back</span>.
           </p>
+        </Reveal>
+        <Reveal delay={120}>
+          <ChapterTradeoff
+            capability={chapter.capability}
+            blindSpot={chapter.blindSpot}
+          />
         </Reveal>
       </div>
     </section>

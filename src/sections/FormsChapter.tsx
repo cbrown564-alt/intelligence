@@ -1,17 +1,16 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { isLiteExperience, startCanvas2D } from '@/lib/canvas';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ChapterHead } from '@/components/ChapterHead';
+import { ChapterTradeoff } from '@/components/ChapterTradeoff';
 import { Reveal } from '@/components/Reveal';
-
-/* ------------------------------------------------------------------ */
-/*  shared tile chrome                                                 */
-/* ------------------------------------------------------------------ */
+import { isLiteExperience, startCanvas2D } from '@/lib/canvas';
 
 function Instrument({
   index,
   name,
   form,
   caption,
+  capability,
+  blindSpot,
   children,
   reverse = false,
   action,
@@ -20,9 +19,11 @@ function Instrument({
   name: string;
   form: string;
   caption: string;
+  capability: string;
+  blindSpot: string;
   children: ReactNode;
   reverse?: boolean;
-  action?: ReactNode;
+  action: ReactNode;
 }) {
   return (
     <Reveal>
@@ -34,411 +35,122 @@ function Instrument({
           <h3>{form}</h3>
           <p>{caption}</p>
           {action}
+          <ChapterTradeoff capability={capability} blindSpot={blindSpot} />
         </div>
       </article>
     </Reveal>
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  MUSIC — pluckable ribbons                                          */
-/* ------------------------------------------------------------------ */
-
-let actx: AudioContext | null = null;
-function pluck(fx: number) {
+function playNote(audioRef: React.RefObject<AudioContext | null>, position: number) {
   try {
-    actx ??= new (window.AudioContext ||
+    audioRef.current ??= new (window.AudioContext ||
       (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
-    if (actx.state === 'suspended') void actx.resume();
+    const audio = audioRef.current;
+    if (audio.state === 'suspended') void audio.resume();
     const scale = [0, 3, 5, 7, 10];
-    const deg = Math.min(14, Math.floor(fx * 15));
-    const semis = scale[deg % 5] + 12 * Math.floor(deg / 5);
-    const f = 196 * Math.pow(2, semis / 12);
-    const o = actx.createOscillator();
-    const g = actx.createGain();
-    o.type = 'sine';
-    o.frequency.value = f;
-    const t = actx.currentTime;
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(0.16, t + 0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
-    o.connect(g).connect(actx.destination);
-    o.start(t);
-    o.stop(t + 1.7);
+    const degree = Math.min(14, Math.floor(position * 15));
+    const semitones = scale[degree % 5] + 12 * Math.floor(degree / 5);
+    const oscillator = audio.createOscillator();
+    const gain = audio.createGain();
+    const start = audio.currentTime;
+    oscillator.type = 'sine';
+    oscillator.frequency.value = 196 * Math.pow(2, semitones / 12);
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(0.16, start + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + 1.6);
+    oscillator.connect(gain).connect(audio.destination);
+    oscillator.start(start);
+    oscillator.stop(start + 1.7);
   } catch {
-    /* audio unavailable — the ribbons still dance */
+    // The ribbon remains a complete visual study when audio is unavailable.
   }
 }
 
-function MusicCanvas() {
+function MusicCanvas({ onPluck }: { onPluck: (position: number) => void }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
-    const stop = startCanvas2D(canvas, (ctx, w, h, t, p) => {
+    const stop = startCanvas2D(canvas, (ctx, w, h, t, pointer) => {
       ctx.clearRect(0, 0, w, h);
       const voices = [
-        { col: 'rgba(232,179,106,0.9)', amp: 1.0, fq: 1.0, ph: 0 },
-        { col: 'rgba(169,155,255,0.7)', amp: 0.7, fq: 1.6, ph: 2.1 },
-        { col: 'rgba(111,224,195,0.55)', amp: 0.5, fq: 2.4, ph: 4.2 },
-        { col: 'rgba(237,231,218,0.35)', amp: 0.35, fq: 3.2, ph: 1.3 },
+        { color: 'rgba(232,179,106,0.9)', amplitude: 1, frequency: 1, phase: 0 },
+        { color: 'rgba(169,155,255,0.7)', amplitude: 0.7, frequency: 1.6, phase: 2.1 },
+        { color: 'rgba(111,224,195,0.55)', amplitude: 0.5, frequency: 2.4, phase: 4.2 },
+        { color: 'rgba(237,231,218,0.35)', amplitude: 0.35, frequency: 3.2, phase: 1.3 },
       ];
-      const px = p.active ? p.x / w : 0.5;
-      const py = p.active ? p.y / h : 0.5;
-      for (const v of voices) {
+      const px = pointer.active ? pointer.x / w : 0.5;
+      const py = pointer.active ? pointer.y / h : 0.5;
+      for (const voice of voices) {
         ctx.beginPath();
         for (let x = 0; x <= w; x += 4) {
           const u = x / w;
-          const env = Math.sin(u * Math.PI); // pinned ends
+          const envelope = Math.sin(u * Math.PI);
           const drive = 1 + Math.exp(-Math.pow((u - px) * 4, 2)) * 2.2;
-          const y =
-            h / 2 +
-            Math.sin(u * 6.3 * v.fq + t * 2.2 + v.ph) *
-              Math.sin(u * 2.1 * v.fq - t * 1.3) *
-              26 *
-              v.amp *
-              env *
-              drive *
-              (0.5 + py);
+          const y = h / 2 +
+            Math.sin(u * 6.3 * voice.frequency + t * 2.2 + voice.phase) *
+            Math.sin(u * 2.1 * voice.frequency - t * 1.3) *
+            26 * voice.amplitude * envelope * drive * (0.5 + py);
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
-        ctx.strokeStyle = v.col;
+        ctx.strokeStyle = voice.color;
         ctx.lineWidth = 1.4;
         ctx.stroke();
       }
-      if (p.active) {
-        ctx.fillStyle = 'rgba(237,231,218,0.8)';
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
-        ctx.fill();
-      }
     });
-    const onDown = (e: PointerEvent) => {
-      const r = canvas.getBoundingClientRect();
-      pluck((e.clientX - r.left) / r.width);
+    const onPointerDown = (event: PointerEvent) => {
+      const bounds = canvas.getBoundingClientRect();
+      onPluck((event.clientX - bounds.left) / bounds.width);
     };
-    canvas.addEventListener('pointerdown', onDown);
+    canvas.addEventListener('pointerdown', onPointerDown);
     return () => {
       stop();
-      canvas.removeEventListener('pointerdown', onDown);
+      canvas.removeEventListener('pointerdown', onPointerDown);
     };
-  }, []);
+  }, [onPluck]);
   return <canvas ref={ref} className="canvas-cover touch-pan" aria-hidden="true" />;
 }
 
-/* ------------------------------------------------------------------ */
-/*  ART — interpretation                                               */
-/* ------------------------------------------------------------------ */
-
-function InterpretationCanvas({ revision }: { revision: number }) {
+function PatternCanvas({ revision }: { revision: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
-
-    type Point = { x: number; y: number };
-    let userGesture: Point[] = [];
-    let drawing = false;
-    const phase = revision * 1.731 + 0.64;
-
-    const appendGesturePoint = (event: PointerEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      const point = { x: event.clientX - rect.left, y: event.clientY - rect.top };
-      const last = userGesture[userGesture.length - 1];
-      if (!last || Math.hypot(point.x - last.x, point.y - last.y) > 4) {
-        userGesture.push(point);
-        if (userGesture.length > 140) userGesture.shift();
-      }
-    };
-    const onGestureStart = (event: PointerEvent) => {
-      drawing = true;
-      userGesture = [];
-      appendGesturePoint(event);
-    };
-    const onGestureMove = (event: PointerEvent) => {
-      if (drawing) appendGesturePoint(event);
-    };
-    const onGestureEnd = () => {
-      drawing = false;
-    };
-    canvas.addEventListener('pointerdown', onGestureStart);
-    canvas.addEventListener('pointermove', onGestureMove);
-    canvas.addEventListener('pointerleave', onGestureEnd);
-    window.addEventListener('pointerup', onGestureEnd);
-
-    const strokePath = (
-      ctx: CanvasRenderingContext2D,
-      points: Point[],
-      end: number,
-      color: string,
-      width: number
-    ) => {
-      if (end < 2) return;
-      ctx.strokeStyle = color;
-      ctx.lineWidth = width;
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, points[0].y);
-      for (let index = 1; index < end - 1; index++) {
-        const point = points[index];
-        const next = points[index + 1];
-        ctx.quadraticCurveTo(
-          point.x,
-          point.y,
-          (point.x + next.x) / 2,
-          (point.y + next.y) / 2
-        );
-      }
-      ctx.lineTo(points[end - 1].x, points[end - 1].y);
-      ctx.stroke();
-    };
-
-    const stop = startCanvas2D(canvas, (ctx, w, h, t) => {
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = '#08080e';
-      ctx.fillRect(0, 0, w, h);
-
-      const cx = w / 2;
-      const cy = h / 2;
-      const size = Math.min(w, h);
-      const wash = ctx.createRadialGradient(cx, cy, size * 0.04, cx, cy, size * 0.55);
-      wash.addColorStop(0, 'rgba(184,173,255,0.08)');
-      wash.addColorStop(0.52, 'rgba(134,228,202,0.025)');
-      wash.addColorStop(1, 'rgba(8,8,14,0)');
-      ctx.fillStyle = wash;
-      ctx.fillRect(0, 0, w, h);
-
-      const pointCount = isLiteExperience() ? 110 : 180;
-      const centers: Point[] = [];
-      const left: Point[] = [];
-      const right: Point[] = [];
-      const innerLeft: Point[] = [];
-      const innerRight: Point[] = [];
-
-      const centerAt = (u: number) => ({
-        x:
-          cx +
-          Math.sin((u - 0.5) * Math.PI * 1.28 + phase * 0.055) * size * 0.105 +
-          Math.sin(u * Math.PI * 5 + phase) * size * 0.012,
-        y:
-          h * (0.84 - u * 0.68) +
-          Math.cos(u * Math.PI * 2 + phase) * size * 0.014,
-      });
-
-      for (let index = 0; index < pointCount; index++) {
-        const u = index / (pointCount - 1);
-        const center = centerAt(u);
-        const next = centerAt(Math.min(1, u + 1 / (pointCount - 1)));
-        const length = Math.max(0.001, Math.hypot(next.x - center.x, next.y - center.y));
-        const nx = -(next.y - center.y) / length;
-        const ny = (next.x - center.x) / length;
-        const envelope = Math.pow(Math.sin(Math.PI * u), 0.72);
-        const width =
-          size * 0.285 * envelope * (0.96 + Math.sin(u * Math.PI * 6 + phase) * 0.055);
-        centers.push(center);
-        left.push({ x: center.x + nx * width, y: center.y + ny * width });
-        right.push({ x: center.x - nx * width, y: center.y - ny * width });
-        innerLeft.push({ x: center.x + nx * width * 0.58, y: center.y + ny * width * 0.58 });
-        innerRight.push({ x: center.x - nx * width * 0.58, y: center.y - ny * width * 0.58 });
-      }
-
-      const progress = 1 - Math.pow(1 - Math.min(1, t / 4.2), 4);
-      const end = Math.max(3, Math.min(pointCount, Math.floor(progress * pointCount)));
-
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(((revision % 5) - 2) * 0.018 + Math.sin(t * 0.18) * 0.004);
-      ctx.translate(-cx, -cy);
-      ctx.globalAlpha = userGesture.length > 2 ? 0.24 : 1;
-      ctx.globalCompositeOperation = 'screen';
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-
-      ctx.fillStyle = 'rgba(184,173,255,0.032)';
-      ctx.beginPath();
-      ctx.moveTo(left[0].x, left[0].y);
-      for (let index = 1; index < end; index++) ctx.lineTo(left[index].x, left[index].y);
-      for (let index = end - 1; index >= 0; index--) ctx.lineTo(right[index].x, right[index].y);
-      ctx.closePath();
-      ctx.fill();
-
-      strokePath(ctx, left, end, 'rgba(184,173,255,0.72)', 1.25);
-      strokePath(ctx, right, end, 'rgba(134,228,202,0.58)', 1.1);
-      strokePath(ctx, innerLeft, end, 'rgba(237,231,218,0.22)', 0.8);
-      strokePath(ctx, innerRight, end, 'rgba(237,231,218,0.18)', 0.8);
-      strokePath(ctx, centers, end, 'rgba(232,179,106,0.88)', 2.35);
-
-      const ribStep = isLiteExperience() ? 13 : 9;
-      for (let index = ribStep; index < end - 2; index += ribStep) {
-        const strength = Math.sin((index / pointCount) * Math.PI);
-        ctx.strokeStyle = `rgba(237,231,218,${0.055 + strength * 0.12})`;
-        ctx.lineWidth = 0.72;
-        ctx.beginPath();
-        ctx.moveTo(left[index].x, left[index].y);
-        ctx.quadraticCurveTo(centers[index].x, centers[index].y, right[index].x, right[index].y);
-        ctx.stroke();
-
-        ctx.fillStyle = index % (ribStep * 2) === 0 ? '#e8b36a' : '#b8adff';
-        ctx.globalAlpha = (userGesture.length > 2 ? 0.24 : 1) * (0.34 + strength * 0.38);
-        ctx.beginPath();
-        ctx.arc(left[index].x, left[index].y, 1.45, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-
-      if (userGesture.length > 2) {
-        const reinterpret = (angle: number, scale: number, mirror = false) =>
-          userGesture.map((point) => {
-            const dx = (mirror ? w - point.x : point.x) - cx;
-            const dy = point.y - cy;
-            return {
-              x: cx + (dx * Math.cos(angle) - dy * Math.sin(angle)) * scale,
-              y: cy + (dx * Math.sin(angle) + dy * Math.cos(angle)) * scale,
-            };
-          });
-        const readings = [
-          { points: userGesture, color: 'rgba(232,179,106,0.9)', width: 2.8 },
-          { points: reinterpret(0.08, 0.92, true), color: 'rgba(184,173,255,0.7)', width: 1.6 },
-          { points: reinterpret(-0.12, 0.8), color: 'rgba(134,228,202,0.58)', width: 1.05 },
-        ];
-        ctx.globalAlpha = 1;
-        ctx.globalCompositeOperation = 'screen';
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        for (const reading of readings) {
-          strokePath(ctx, reading.points, reading.points.length, reading.color, reading.width);
-        }
-      }
-    });
-    return () => {
-      stop();
-      canvas.removeEventListener('pointerdown', onGestureStart);
-      canvas.removeEventListener('pointermove', onGestureMove);
-      canvas.removeEventListener('pointerleave', onGestureEnd);
-      window.removeEventListener('pointerup', onGestureEnd);
-    };
-  }, [revision]);
-  return (
-    <canvas
-      ref={ref}
-      className="canvas-cover interpretation-canvas touch-pan"
-      aria-hidden="true"
-    />
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  MATH — phyllotaxis                                                 */
-/* ------------------------------------------------------------------ */
-
-function PhylloCanvas() {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const canvas = ref.current;
-    if (!canvas) return;
-    const stop = startCanvas2D(canvas, (ctx, w, h, t, p) => {
+    const stop = startCanvas2D(canvas, (ctx, w, h, t, pointer) => {
       ctx.fillStyle = 'rgba(10,10,16,0.28)';
       ctx.fillRect(0, 0, w, h);
       const cx = w / 2;
       const cy = h / 2;
-      const golden = 137.508 * (Math.PI / 180);
-      const wob = p.active ? (p.x / w - 0.5) * 0.02 : 0;
-      const maxN = isLiteExperience() ? 420 : 880;
-      const c = (Math.min(w, h) / 2 - 12) / Math.sqrt(maxN);
-      const n = Math.min(maxN, Math.floor(((t * 90) % (maxN + 260))));
-      for (let i = 0; i < n; i++) {
-        const a = i * (golden + wob) + t * 0.06;
-        const r = c * Math.sqrt(i);
-        const x = cx + Math.cos(a) * r;
-        const y = cy + Math.sin(a) * r;
-        const f = i / maxN;
-        ctx.fillStyle =
-          f < 0.5
-            ? `rgba(232,179,106,${0.35 + f})`
-            : `rgba(169,155,255,${0.4 + (1 - f) * 0.5})`;
+      const goldenAngle = 137.508 * (Math.PI / 180);
+      const pointerShift = pointer.active ? (pointer.x / w - 0.5) * 0.02 : 0;
+      const revisionShift = ((revision % 7) - 3) * 0.0018;
+      const maximum = isLiteExperience() ? 420 : 880;
+      const spacing = (Math.min(w, h) / 2 - 12) / Math.sqrt(maximum);
+      const count = Math.min(maximum, Math.floor((t * 90) % (maximum + 260)));
+      for (let index = 0; index < count; index += 1) {
+        const angle = index * (goldenAngle + pointerShift + revisionShift) + t * 0.06;
+        const radius = spacing * Math.sqrt(index);
+        const progress = index / maximum;
+        ctx.fillStyle = progress < 0.5
+          ? `rgba(232,179,106,${0.35 + progress})`
+          : `rgba(169,155,255,${0.4 + (1 - progress) * 0.5})`;
         ctx.beginPath();
-        ctx.arc(x, y, 0.8 + f * 2.0, 0, Math.PI * 2);
+        ctx.arc(
+          cx + Math.cos(angle) * radius,
+          cy + Math.sin(angle) * radius,
+          0.8 + progress * 2,
+          0,
+          Math.PI * 2
+        );
         ctx.fill();
       }
     });
     return stop;
-  }, []);
+  }, [revision]);
   return <canvas ref={ref} className="canvas-cover touch-pan" aria-hidden="true" />;
 }
-
-/* ------------------------------------------------------------------ */
-/*  SCIENCE — plexus                                                   */
-/* ------------------------------------------------------------------ */
-
-function PlexusCanvas() {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const canvas = ref.current;
-    if (!canvas) return;
-    let nodes: { x: number; y: number; vx: number; vy: number; c: string }[] = [];
-    let seeded = false;
-    const stop = startCanvas2D(canvas, (ctx, w, h, _t, p) => {
-      if (!seeded) {
-        nodes = Array.from({ length: isLiteExperience() ? 28 : 52 }, (_, i) => ({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
-          c: i % 3 === 0 ? '#6fe0c3' : i % 3 === 1 ? '#a99bff' : '#e8b36a',
-        }));
-        seeded = true;
-      }
-      ctx.clearRect(0, 0, w, h);
-      for (const nd of nodes) {
-        if (p.active) {
-          const dx = p.x - nd.x;
-          const dy = p.y - nd.y;
-          const d = Math.hypot(dx, dy);
-          if (d < 140 && d > 1) {
-            nd.vx += (dx / d) * 0.03;
-            nd.vy += (dy / d) * 0.03;
-          }
-        }
-        nd.vx = Math.max(-0.9, Math.min(0.9, nd.vx));
-        nd.vy = Math.max(-0.9, Math.min(0.9, nd.vy));
-        nd.x += nd.vx;
-        nd.y += nd.vy;
-        if (nd.x < 0 || nd.x > w) nd.vx *= -1;
-        if (nd.y < 0 || nd.y > h) nd.vy *= -1;
-        nd.x = Math.max(0, Math.min(w, nd.x));
-        nd.y = Math.max(0, Math.min(h, nd.y));
-      }
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const a = nodes[i];
-          const b = nodes[j];
-          const d = Math.hypot(a.x - b.x, a.y - b.y);
-          if (d < 95) {
-            ctx.strokeStyle = `rgba(140,150,200,${(1 - d / 95) * 0.35})`;
-            ctx.lineWidth = 0.7;
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
-          }
-        }
-      }
-      for (const nd of nodes) {
-        ctx.fillStyle = nd.c;
-        ctx.beginPath();
-        ctx.arc(nd.x, nd.y, 1.8, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    });
-    return stop;
-  }, []);
-  return <canvas ref={ref} className="canvas-cover touch-pan" aria-hidden="true" />;
-}
-
-/* ------------------------------------------------------------------ */
-/*  NATURE — boids                                                     */
-/* ------------------------------------------------------------------ */
 
 interface Boid {
   x: number;
@@ -447,83 +159,86 @@ interface Boid {
   vy: number;
 }
 
-function FlockCanvas() {
+const FLOCK_MOTION_RATE = 0.5;
+
+function FlockCanvas({ revision }: { revision: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
     let boids: Boid[] = [];
     let seeded = false;
-    const stop = startCanvas2D(canvas, (ctx, w, h, _t, p) => {
+    const stop = startCanvas2D(canvas, (ctx, w, h, _t, pointer) => {
       if (!seeded) {
+        const impulse = revision === 0 ? 2 : 5;
         boids = Array.from({ length: isLiteExperience() ? 34 : 64 }, () => ({
           x: Math.random() * w,
           y: Math.random() * h,
-          vx: (Math.random() - 0.5) * 2,
-          vy: (Math.random() - 0.5) * 2,
+          vx: (Math.random() - 0.5) * impulse,
+          vy: (Math.random() - 0.5) * impulse,
         }));
         seeded = true;
       }
       ctx.fillStyle = 'rgba(10,10,16,0.3)';
       ctx.fillRect(0, 0, w, h);
 
-      for (const b of boids) {
-        let ax = 0;
-        let ay = 0;
-        let cx = 0;
-        let cy = 0;
-        let cnt = 0;
-        let sx = 0;
-        let sy = 0;
-        for (const o of boids) {
-          if (o === b) continue;
-          const dx = o.x - b.x;
-          const dy = o.y - b.y;
-          const d2 = dx * dx + dy * dy;
-          if (d2 < 2600) {
-            cx += o.x;
-            cy += o.y;
-            ax += o.vx;
-            ay += o.vy;
-            cnt++;
-            if (d2 < 500 && d2 > 0.01) {
-              const d = Math.sqrt(d2);
-              sx -= dx / d;
-              sy -= dy / d;
+      for (const boid of boids) {
+        let alignX = 0;
+        let alignY = 0;
+        let centerX = 0;
+        let centerY = 0;
+        let separateX = 0;
+        let separateY = 0;
+        let neighbours = 0;
+        for (const other of boids) {
+          if (other === boid) continue;
+          const dx = other.x - boid.x;
+          const dy = other.y - boid.y;
+          const distanceSquared = dx * dx + dy * dy;
+          if (distanceSquared < 2600) {
+            centerX += other.x;
+            centerY += other.y;
+            alignX += other.vx;
+            alignY += other.vy;
+            neighbours += 1;
+            if (distanceSquared < 500 && distanceSquared > 0.01) {
+              const distance = Math.sqrt(distanceSquared);
+              separateX -= dx / distance;
+              separateY -= dy / distance;
             }
           }
         }
-        if (cnt > 0) {
-          b.vx += (cx / cnt - b.x) * 0.0012 + (ax / cnt - b.vx) * 0.05 + sx * 0.06;
-          b.vy += (cy / cnt - b.y) * 0.0012 + (ay / cnt - b.vy) * 0.05 + sy * 0.06;
+        if (neighbours > 0) {
+          boid.vx += ((centerX / neighbours - boid.x) * 0.0012 +
+            (alignX / neighbours - boid.vx) * 0.05 + separateX * 0.06) * FLOCK_MOTION_RATE;
+          boid.vy += ((centerY / neighbours - boid.y) * 0.0012 +
+            (alignY / neighbours - boid.vy) * 0.05 + separateY * 0.06) * FLOCK_MOTION_RATE;
         }
-        if (p.active) {
-          const dx = b.x - p.x;
-          const dy = b.y - p.y;
-          const d = Math.hypot(dx, dy);
-          if (d < 110 && d > 1) {
-            const f = ((110 - d) / 110) * 0.9;
-            b.vx += (dx / d) * f;
-            b.vy += (dy / d) * f;
+        if (pointer.active) {
+          const dx = boid.x - pointer.x;
+          const dy = boid.y - pointer.y;
+          const distance = Math.hypot(dx, dy);
+          if (distance < 110 && distance > 1) {
+            const force = ((110 - distance) / 110) * 0.9 * FLOCK_MOTION_RATE;
+            boid.vx += (dx / distance) * force;
+            boid.vy += (dy / distance) * force;
           }
         }
-        const sp = Math.hypot(b.vx, b.vy);
-        const max = 2.6;
-        if (sp > max) {
-          b.vx = (b.vx / sp) * max;
-          b.vy = (b.vy / sp) * max;
+        const speed = Math.hypot(boid.vx, boid.vy);
+        if (speed > 2.6) {
+          boid.vx = (boid.vx / speed) * 2.6;
+          boid.vy = (boid.vy / speed) * 2.6;
         }
-        b.x += b.vx;
-        b.y += b.vy;
-        if (b.x < -10) b.x += w + 20;
-        if (b.x > w + 10) b.x -= w + 20;
-        if (b.y < -10) b.y += h + 20;
-        if (b.y > h + 10) b.y -= h + 20;
-
-        const ang = Math.atan2(b.vy, b.vx);
+        boid.x += boid.vx * FLOCK_MOTION_RATE;
+        boid.y += boid.vy * FLOCK_MOTION_RATE;
+        if (boid.x < -10) boid.x += w + 20;
+        else if (boid.x > w + 10) boid.x -= w + 20;
+        if (boid.y < -10) boid.y += h + 20;
+        else if (boid.y > h + 10) boid.y -= h + 20;
+        const angle = Math.atan2(boid.vy, boid.vx);
         ctx.save();
-        ctx.translate(b.x, b.y);
-        ctx.rotate(ang);
+        ctx.translate(boid.x, boid.y);
+        ctx.rotate(angle);
         ctx.fillStyle = 'rgba(111,224,195,0.85)';
         ctx.beginPath();
         ctx.moveTo(5, 0);
@@ -535,16 +250,19 @@ function FlockCanvas() {
       }
     });
     return stop;
-  }, []);
+  }, [revision]);
   return <canvas ref={ref} className="canvas-cover touch-pan" aria-hidden="true" />;
 }
 
-/* ------------------------------------------------------------------ */
-/*  chapter                                                            */
-/* ------------------------------------------------------------------ */
-
 export function FormsChapter() {
-  const [artRevision, setArtRevision] = useState(0);
+  const audioRef = useRef<AudioContext | null>(null);
+  const [patternRevision, setPatternRevision] = useState(0);
+  const [flockRevision, setFlockRevision] = useState(0);
+  const pluck = useCallback((position: number) => playNote(audioRef, position), []);
+
+  useEffect(() => () => {
+    if (audioRef.current) void audioRef.current.close();
+  }, []);
 
   return (
     <section id="forms" className="relative bg-ink py-28 md:py-36">
@@ -552,83 +270,77 @@ export function FormsChapter() {
         <ChapterHead
           title={
             <>
-              Rhythm. Interpretation. Pattern.
-              <br />
-              Connection. <em className="text-violet-glow">Flock.</em>
+              Rhythm. Pattern. <em className="text-violet-glow">Flock.</em>
             </>
           }
-          lede="Pluck a string. Draw a gesture. Turn a spiral. Pull a network. Disturb a flock. Each study gives the same screen a different kind of life."
+          lede="Three instruments receive the same hand differently. Each brings one behaviour forward and lets the rest fall away."
         />
 
         <div className="instrument-rack mt-16">
           <Instrument
-            index="α"
-            name="rhythm"
-            form="Music"
-            caption="Five strings wait under tension. Pluck one and watch a note travel, fade, and leave the field quiet again."
+            index="01"
+            name="frequency"
+            form="Rhythm"
+            caption="A pinned ribbon turns frequency into motion. Sound deepens the study when available; the visible interval carries the same meaning in silence."
+            capability="Frequency becomes a visible interval."
+            blindSpot="The ribbon drops the material and room that gave the sound its timbre."
             action={
               <button type="button" className="instrument__action" onClick={() => pluck(0.48)}>
-                Play a note
+                Play the middle note
               </button>
             }
           >
-            <MusicCanvas />
+            <MusicCanvas onPluck={pluck} />
           </Instrument>
           <Instrument
-            index="β"
-            name="interpretation"
-            form="Art"
-            caption="Leave a gesture on the canvas. It returns as a mirror, an echo, and a revision of your hand."
+            index="02"
+            name="repetition"
+            form="Pattern"
+            caption="One angle repeats until a spiral appears. A slight change reorganises the whole field."
+            capability="A repeated angle reveals order without a grid."
+            blindSpot="The finished spiral hides the sequence and alternatives that produced it."
             reverse
             action={
               <button
                 type="button"
                 className="instrument__action"
-                onClick={() => setArtRevision((value) => value + 1)}
+                onClick={() => setPatternRevision((value) => value + 1)}
               >
-                Begin another reading
+                Change the angle
               </button>
             }
           >
-            <InterpretationCanvas revision={artRevision} />
+            <PatternCanvas revision={patternRevision} />
           </Instrument>
           <Instrument
-            index="γ"
-            name="form"
-            form="Math"
-            caption="Turn one angle again and again. The points refuse a straight row and gather into a spiral."
+            index="03"
+            name="neighbours"
+            form="Flock"
+            caption="Each particle keeps its distance, follows nearby motion, and stays close. Coordination appears without a leader."
+            capability="Neighbour rules reveal collective motion."
+            blindSpot="The flock view hides each particle's incomplete local view."
+            action={
+              <button
+                type="button"
+                className="instrument__action"
+                onClick={() => setFlockRevision((value) => value + 1)}
+              >
+                Scatter the flock
+              </button>
+            }
           >
-            <PhylloCanvas />
-          </Instrument>
-          <Instrument
-            index="δ"
-            name="signal"
-            form="Science"
-            caption="Pull one connection. The disturbance travels outward until the whole network settles around it."
-            reverse
-          >
-            <PlexusCanvas />
-          </Instrument>
-          <Instrument
-            index="ε"
-            name="flock"
-            form="Nature"
-            caption="Each particle keeps its distance, follows its neighbours, and stays close. A flock appears without a leader."
-          >
-            <FlockCanvas />
+            <FlockCanvas revision={flockRevision} />
           </Instrument>
 
           <Reveal>
             <div className="instrument-coda">
               <p className="font-serif-display text-3xl md:text-5xl leading-snug text-paper font-light">
-                Change the form and you change{' '}
-                <em className="text-sand">what the hand can do</em>, what the eye
-                can follow, and{' '}
-                <em className="text-violet-glow">what the machine seems to be.</em>
+                Change the instrument and you change{' '}
+                <em className="text-sand">what can be perceived</em>.
               </p>
               <p>
-                These studies answer touch as it happens. Next, the field leaves
-                the hand behind and moves through the air.
+                Next, the signal leaves the hand behind and moves through the air,
+                where one confident reading can still be wrong.
               </p>
             </div>
           </Reveal>

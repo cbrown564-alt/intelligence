@@ -1,5 +1,6 @@
 import type { ChapterSummary } from '@/content/chapters';
 import { ChapterArtwork } from '@/components/ChapterArtwork';
+import { ChapterTradeoff } from '@/components/ChapterTradeoff';
 
 export function ChapterPreview({
   chapter,
@@ -17,6 +18,10 @@ export function ChapterPreview({
         <h2 id={`${chapter.id}-title`}>{chapter.title}</h2>
         <p>{chapter.summary}</p>
         <p>{chapter.detail}</p>
+        <ChapterTradeoff
+          capability={chapter.capability}
+          blindSpot={chapter.blindSpot}
+        />
         {enhancementError ? (
           <div className="chapter-preview__notice" role="status">
             <span>The interactive study could not load. This static study contains the same argument.</span>

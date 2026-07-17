@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#07070b" />
+    <title>Critical Review — The Shape of Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&family=Petrona:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #07070b;
+        --ink-2: #0b0b12;
+        --ink-3: #11111b;
+        --paper: #ede7da;
+        --paper-72: rgba(237, 231, 218, 0.72);
+        --paper-55: rgba(237, 231, 218, 0.55);
+        --paper-30: rgba(237, 231, 218, 0.30);
+        --rule: rgba(237, 231, 218, 0.12);
+        --sand: #e8b36a;
+        --violet: #b8adff;
+        --sea: #86e4ca;
+        --rose: #e8918c;
+        --maxw: 78ch;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; scroll-padding-top: 4.5rem; background: var(--ink); }
+      body {
+        margin: 0;
+        background:
+          radial-gradient(120% 80% at 78% 8%, rgba(184,173,255,0.07), transparent 55%),
+          radial-gradient(90% 60% at 12% 95%, rgba(134,228,202,0.05), transparent 60%),
+          var(--ink);
+        color: var(--paper);
+        font-family: "Atkinson Hyperlegible Next", "Segoe UI", system-ui, sans-serif;
+        line-height: 1.62;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        overflow-x: hidden;
+      }
+      h1, h2, h3, h4 { text-wrap: balance; margin: 0; font-weight: 350; }
+      p { text-wrap: pretty; margin: 0 0 1.1rem; }
+      p:last-child { margin-bottom: 0; }
+      a { color: var(--sand); }
+
+      .display {
+        font-family: "Petrona", Georgia, serif;
+        font-variation-settings: "opsz" 72;
+        letter-spacing: -0.03em;
+        line-height: 1.02;
+      }
+      .mono {
+        font-family: "Atkinson Hyperlegible Next", ui-monospace, monospace;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        color: var(--paper-55);
+      }
+
+      /* ---------- layout shells ---------- */
+      main { max-width: 1040px; margin: 0 auto; padding: 0 1.5rem; }
+      section { padding: 4.5rem 0; border-top: 1px solid var(--rule); }
+      section:first-of-type { border-top: none; }
+
+      /* ---------- masthead / hero ---------- */
+      .bar {
+        position: sticky; top: 0; z-index: 50;
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 1rem; padding: 0.7rem 1.5rem;
+        background: rgba(7,7,11,0.86); backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--rule);
+      }
+      .bar__t { font-family: "Petrona", serif; letter-spacing: -0.02em; font-size: 1.02rem; }
+      .bar__t b { color: var(--sand); font-weight: 350; }
+      .bar nav { display: flex; gap: 1.1rem; flex-wrap: wrap; }
+      .bar nav a { color: var(--paper-72); text-decoration: none; font-size: 0.82rem; }
+      .bar nav a:hover { color: var(--sand); }
+
+      header.hero { padding: 6rem 0 3.5rem; }
+      .kicker { color: var(--sand); }
+      h1.big {
+        font-size: clamp(2.8rem, 9vw, 6.4rem); margin: 1.4rem 0 1.8rem;
+      }
+      h1.big em { font-style: italic; color: var(--violet); }
+      h1.big b { color: var(--sand); font-weight: 350; }
+      .lede { font-size: clamp(1.05rem, 2.4vw, 1.32rem); color: var(--paper-72); max-width: 58ch; }
+
+      /* ---------- section heads ---------- */
+      .sheaf { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2.4rem; flex-wrap: wrap; }
+      h2.title { font-size: clamp(1.9rem, 4.8vw, 3.2rem); }
+      h2.title em { font-style: italic; color: var(--sand); }
+      .sheaf .meta { margin-left: auto; }
+
+      /* ---------- verdict pills ---------- */
+      .verdicts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 0.9rem; margin-top: 1.6rem; }
+      .v {
+        border: 1px solid var(--rule); border-radius: 14px; padding: 1.1rem 1.2rem;
+        background: linear-gradient(180deg, rgba(237,231,218,0.025), rgba(237,231,218,0));
+      }
+      .v__n { font-family: "Petrona", serif; font-size: 2.6rem; line-height: 1; letter-spacing: -0.04em; }
+      .v__n.good { color: var(--sea); } .v__n.warn { color: var(--sand); } .v__n.risk { color: var(--rose); }
+      .v__l { color: var(--paper-55); font-size: 0.78rem; margin-top: 0.5rem; }
+      .v__d { font-size: 0.9rem; color: var(--paper-72); margin-top: 0.35rem; line-height: 1.5; }
+
+      /* ---------- review columns ---------- */
+      .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 16px; overflow: hidden; }
+      @media (max-width: 760px) { .pair { grid-template-columns: 1fr; } }
+      .pane { padding: 1.6rem 1.6rem; background: var(--ink); }
+      .pane h3 { font-size: 1.35rem; margin-bottom: 1rem; }
+      .pane h3 .tag { font-family: "Atkinson Hyperlegible Next"; font-size: 0.64rem; letter-spacing: 0.16em; text-transform: uppercase; vertical-align: middle; padding: 0.15rem 0.5rem; border-radius: 999px; margin-left: 0.5rem; }
+      .tag.web { color: var(--sea); border: 1px solid rgba(134,228,202,0.4); }
+      .tag.vid { color: var(--sand); border: 1px solid rgba(232,179,106,0.4); }
+
+      ul.thin { list-style: none; padding: 0; margin: 0; }
+      ul.thin > li { padding: 0.7rem 0 0.7rem 1.7rem; border-bottom: 1px dashed var(--rule); position: relative; font-size: 0.93rem; color: var(--paper-72); }
+      ul.thin > li:last-child { border-bottom: none; }
+      ul.thin > li::before {
+        content: ""; position: absolute; left: 0; top: 1.15rem;
+        width: 9px; height: 9px; border-radius: 50%;
+      }
+      ul.thin > li.p::before { background: var(--sea); }
+      ul.thin > li.m::before { background: var(--sand); }
+      ul.thin > li.r::before { background: var(--rose); }
+      ul.thin > li b { color: var(--paper); font-weight: 600; }
+
+      /* ---------- quadrant plot ---------- */
+      .plot-wrap { position: relative; margin: 1.4rem 0 1rem; }
+      .plot-frame {
+        position: relative; aspect-ratio: 1 / 1; max-width: 720px; margin: 0 auto;
+        border: 1px solid var(--rule); border-radius: 18px; overflow: hidden;
+        background:
+          linear-gradient(180deg, rgba(232,179,106,0.06), transparent 40%),
+          linear-gradient(0deg, rgba(134,228,202,0.05), transparent 40%),
+          var(--ink-2);
+        touch-action: none;
+      }
+      .plot-frame::before, .plot-frame::after {
+        content: ""; position: absolute; background: var(--rule);
+      }
+      .plot-frame::before { left: 50%; top: 0; bottom: 0; width: 1px; }
+      .plot-frame::after { top: 50%; left: 0; right: 0; height: 1px; }
+      .quad-label {
+        position: absolute; font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase;
+        color: var(--paper-30); padding: 0.5rem 0.7rem; pointer-events: none;
+      }
+      .ax-title { position: absolute; color: var(--paper-55); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; }
+      .ax-title.x { bottom: 0.45rem; left: 50%; transform: translateX(-50%); text-align: center; }
+      .ax-title.x .hi { color: var(--sand); }
+      .ax-title.y { top: 50%; left: 0.55rem; transform: rotate(-90deg) translateX(50%); transform-origin: left top; white-space: nowrap; }
+      .ax-title.y .hi { color: var(--sea); }
+      .ax-end { position: absolute; font-size: 0.58rem; letter-spacing: 0.1em; color: var(--paper-30); text-transform: uppercase; }
+
+      .pt {
+        position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px;
+        border-radius: 50%; cursor: pointer;
+        background: var(--paper); border: 2px solid var(--ink);
+        box-shadow: 0 0 0 0 rgba(232,179,106,0); transition: box-shadow .18s, transform .18s;
+      }
+      .pt.web { background: var(--sea); }
+      .pt.vid { background: var(--sand); }
+      .pt.both { background: linear-gradient(135deg, var(--sea) 0 50%, var(--sand) 50% 100%); }
+      .pt:hover, .pt.active { transform: scale(1.35); box-shadow: 0 0 0 7px rgba(232,179,106,0.14); z-index: 3; }
+      .pt:focus-visible { outline: 3px solid var(--sand); outline-offset: 3px; }
+
+      .qlegend { display: flex; gap: 1.4rem; justify-content: center; flex-wrap: wrap; margin-top: 0.4rem; }
+      .qlegend span { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.78rem; color: var(--paper-72); }
+      .qlegend i { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+      .qlegend i.web { background: var(--sea); } .qlegend i.vid { background: var(--sand); } .qlegend i.both { background: linear-gradient(135deg, var(--sea) 0 50%, var(--sand) 50% 100%); }
+
+      .qcard {
+        margin-top: 1.4rem; border: 1px solid var(--rule); border-radius: 16px; padding: 1.4rem 1.5rem;
+        background: linear-gradient(180deg, rgba(237,231,218,0.03), rgba(237,231,218,0));
+        min-height: 6.5rem;
+      }
+      .qcard .qh { display: flex; align-items: center; gap: 0.7rem; }
+      .qcard .qid { font-family: "Petrona", serif; font-size: 1.8rem; line-height: 1; color: var(--sand); }
+      .qcard .qtag { font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase; padding: 0.2rem 0.55rem; border-radius: 999px; border: 1px solid var(--rule); color: var(--paper-55); }
+      .qcard h4 { font-size: 1.2rem; margin-top: 0.6rem; }
+      .qcard p { color: var(--paper-72); font-size: 0.93rem; margin-top: 0.55rem; }
+      .qcard .impact { margin-top: 0.7rem; display: flex; gap: 1.4rem; flex-wrap: wrap; font-size: 0.74rem; color: var(--paper-55); }
+      .qcard .impact b { color: var(--paper); font-weight: 600; }
+
+      /* ---------- recommendation ladder ---------- */
+      .ladder { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 16px; overflow: hidden; }
+      .rung { display: grid; grid-template-columns: 64px 1fr; background: var(--ink); }
+      @media (max-width: 720px) { .rung { grid-template-columns: 48px 1fr; } }
+      .rung__n {
+        display: flex; align-items: center; justify-content: center;
+        font-family: "Petrona", serif; font-size: 2rem; letter-spacing: -0.04em;
+        background: linear-gradient(180deg, rgba(237,231,218,0.05), transparent);
+        border-right: 1px solid var(--rule);
+      }
+      .rung__b { padding: 1.3rem 1.5rem; }
+      .rung__b h4 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+      .rung__b h4 .for { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; padding: 0.18rem 0.5rem; border-radius: 999px; margin-left: 0.5rem; vertical-align: middle; }
+      .for.web { color: var(--sea); border: 1px solid rgba(134,228,202,0.4); }
+      .for.vid { color: var(--sand); border: 1px solid rgba(232,179,106,0.4); }
+      .for.both { color: var(--violet); border: 1px solid rgba(184,173,255,0.4); }
+      .rung__b p { color: var(--paper-72); font-size: 0.92rem; }
+      .rung__b .gain { margin-top: 0.6rem; font-size: 0.78rem; color: var(--paper-55); }
+      .rung__b .gain b { color: var(--sand); }
+
+      blockquote.pull {
+        margin: 2.4rem 0 0; padding: 1.4rem 1.6rem; border-left: 3px solid var(--sand);
+        background: rgba(232,179,106,0.05); border-radius: 0 12px 12px 0;
+        font-family: "Petrona", serif; font-style: italic; font-size: 1.25rem; line-height: 1.4; color: var(--paper);
+      }
+      .foot { padding: 3rem 0 5rem; text-align: center; color: var(--paper-30); font-size: 0.8rem; }
+
+      :focus-visible { outline: 3px solid var(--sand); outline-offset: 3px; border-radius: 4px; }
+      ::selection { color: var(--ink); background: var(--sand); }
+      @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+    </style>
+  </head>
+  <body>
+    <div class="bar">
+      <span class="bar__t"><b>The Shape of Intelligence</b> &middot; critical review</span>
+      <nav>
+        <a href="#design">Design</a>
+        <a href="#story">Story</a>
+        <a href="#impl">Implementation</a>
+        <a href="#plot">Quadrant</a>
+        <a href="#recs">Recommendations</a>
+      </nav>
+    </div>
+
+    <main>
+      <header class="hero">
+        <p class="mono kicker">A critical review &mdash; design, story, implementation</p>
+        <h1 class="display big">
+          Whispering<br />
+          when it could<br />
+          <em>declare.</em>
+        </h1>
+        <p class="lede">
+          <i>The Shape of Intelligence</i> is a disciplined, genuinely well-built visual essay and a
+          48-second companion film. The engineering and accessibility are stronger than the argument
+          they carry. What follows is a direct critique of both media, a map of twenty improvements
+          across two axes, and a prioritized series of bets &mdash; ambitious by design.
+        </p>
+        <div class="verdicts">
+          <div class="v"><div class="v__n good">A&minus;</div><div class="v__l">Engineering &amp; access</div><div class="v__d">Lazy engines, a 150&nbsp;KB budget, reduced-motion parity, focus-visible &mdash; rare and real.</div></div>
+          <div class="v"><div class="v__n warn">B</div><div class="v__l">Art direction</div><div class="v__d">A coherent material metaphor, but chapter visuals drift toward a shared particle dialect.</div></div>
+          <div class="v"><div class="v__n warn">B&minus;</div><div class="v__l">Argument</div><div class="v__d">The thesis is true but hedged, and it arrives at the end instead of driving the trip.</div></div>
+          <div class="v"><div class="v__n risk">C+</div><div class="v__l">Story stakes</div><div class="v__d">Atmospheric and calm &mdash; but nothing is at risk, nothing fails, nothing costs.</div></div>
+        </div>
+      </header>
+
+      <!-- =================== DESIGN =================== -->
+      <section id="design">
+        <div class="sheaf">
+          <div>
+            <p class="mono">01 &mdash; Design</p>
+            <h2 class="display title">A mineral gallery<br />that <em>forgets to vary</em> its rooms.</h2>
+          </div>
+          <span class="mono meta">web + video</span>
+        </div>
+        <p style="max-width:62ch; color:var(--paper-72);">
+          The voice is exactly right &mdash; <i>mineral, scientific, uncanny</i> &mdash; and the colour
+          grammar (sand = material, violet = transformation, sea = chemistry) is one of the best
+          things here. The problem is consistency mistaken for richness: six chapters that begin to
+          feel like six flavours of the same particle field, and a film whose scenes share more DNA
+          than they should.
+        </p>
+
+        <div class="pair" style="margin-top:2rem;">
+          <div class="pane">
+            <h3>Webpage <span class="tag web">interactive</span></h3>
+            <ul class="thin">
+              <li class="p"><b>Type pairing is a real choice.</b> Petrona&rsquo;s mechanical serif against Atkinson&rsquo;s legible body avoids the tired Fraunces editorial default &mdash; it gives the essay a voice.</li>
+              <li class="p"><b>The "matter current" is the single best idea.</b> One particle field that becomes force, signal, chemical, structure, light is a genuine structural motif, not decoration.</li>
+              <li class="m"><b>Chapters drift toward one dialect.</b> Phyllotaxis, plexus, boids, ribbons and the finale motes are all <i>coloured dots on black with pointer attraction</i>. The variety is in the math, not the image.</li>
+              <li class="m"><b>Layout repetition.</b> The DESIGN doc forbids "identical card grids" &mdash; yet FormsChapter ships five near-identical <code>instrument</code> tiles. The doc is being aspirational, not descriptive.</li>
+              <li class="r"><b>Canvas interaction is pointer-only.</b> Keyboard and switch users can never disturb the field, pluck a ribbon, or draw a gesture. The accessibility contract is honoured for <i>reading</i> but not for <i>playing</i>.</li>
+            </ul>
+          </div>
+          <div class="pane">
+            <h3>MP4 <span class="tag vid">48s &middot; 9:16</span></h3>
+            <ul class="thin">
+              <li class="p"><b>Causal handoffs are masterful.</b> Sand&rarr;wafer&rarr;laser&rarr;circuit&rarr;current&rarr;neuron&rarr;DNA&rarr;swarm is a continuous object that never cuts. This is the film&rsquo;s spine and it works.</li>
+              <li class="p"><b>Shared systems tie it to the site.</b> Reusing the Forms ribbons, phyllotaxis and Shapeshift noise makes the film a true companion, not a trailer.</li>
+              <li class="m"><b>One house style across every scene.</b> Glowing nodes, screen-blend spirals, radial gradients on near-black. By scene 4 the viewer has <i>seen the technique</i>; surprise drops.</li>
+              <li class="m"><b>Identifiable materials underdeliver.</b> The README promises "identifiable tools, organisms, structures," but the brain is an abstract plexus and the insects are triangles. Literalism would have raised the stakes.</li>
+              <li class="r"><b>A film about music and chemical "language" is silent.</b> Autoplay-muted is a fair constraint; choosing <i>silence even when unmuted</i> wastes the film&rsquo;s own thesis.</li>
+            </ul>
+          </div>
+        </div>
+
+        <blockquote class="pull">
+          The aesthetic is a single, well-tuned instrument. The essay needs a second instrument &mdash;
+          a contrasting register &mdash; so the whole thing isn&rsquo;t one long, beautiful hum.
+        </blockquote>
+      </section>
+
+      <!-- =================== STORY =================== -->
+      <section id="story">
+        <div class="sheaf">
+          <div>
+            <p class="mono">02 &mdash; Story &amp; argument</p>
+            <h2 class="display title">Two essays that<br /><em>disagree quietly.</em></h2>
+          </div>
+          <span class="mono meta">narrative</span>
+        </div>
+        <p style="max-width:62ch; color:var(--paper-72);">
+          This is the sharpest finding: the webpage and the film tell <b>different stories</b>, and
+          neither notices. The page is a phenomenological argument (<i>the interface shapes the
+          encounter</i>); the film is an origins myth (<i>from sand to a synthetic mind</i>). They
+          share a title and a palette but not a conclusion. On top of that, both are unusually
+          conflict-averse for work about intelligence.
+        </p>
+
+        <div class="pair" style="margin-top:2rem;">
+          <div class="pane">
+            <h3>Webpage argument <span class="tag web">six chapters</span></h3>
+            <ul class="thin">
+              <li class="p"><b>A real, defensible thesis.</b> "Change the encounter and the machine appears to change with it" is the strongest line in the project &mdash; genuinely worth building a site around.</li>
+              <li class="m"><b>The thesis arrives in chapter 6.</b> Chapters 1&ndash;5 are poetic observation; only the finale names the claim. The reader walks four chapters before learning what they&rsquo;re being shown.</li>
+              <li class="m"><b>No antagonist, no cost.</b> Every form is gentle and generative. The argument that <i>forms constrain</i> what intelligence can be is asserted but never felt &mdash; no form is shown <i>failing</i> or <i>distorting</i>.</li>
+              <li class="m"><b>Hedged copy.</b> "Appears to change," "seems to be." The product doc wisely avoids overclaiming consciousness &mdash; but the prose overcorrects into timidity. A bolder verb would carry more, not less, truth.</li>
+              <li class="m"><b>Chapter 3 is overloaded.</b> FormsChapter asks one section to carry five distinct ideas (rhythm / art / math / science / nature). It dilutes each and slows the arc.</li>
+            </ul>
+          </div>
+          <div class="pane">
+            <h3>MP4 narrative <span class="tag vid">origins&rarr;transcendence</span></h3>
+            <ul class="thin">
+              <li class="p"><b>A complete, legible arc.</b> Formation&rarr;biological&rarr;animal&rarr;alien is easy to follow and emotionally shaped. As a piece of craft it holds.</li>
+              <li class="r"><b>It contradicts the site&rsquo;s thesis.</b> The page says intelligence is plural and shaped by encounter; the film climaxes on a <i>single synthesised sensorium</i> &mdash; one mind, ascending. That&rsquo;s a different claim.</li>
+              <li class="m"><b>Teleology toward transcendence.</b> "A mind can inhabit senses we do not have" is sublime but familiar &mdash; the standard AI-as-ascension beat. It undercuts the page&rsquo;s pluralism.</li>
+              <li class="m"><b>Text does the lifting the image avoids.</b> "It speaks in chemicals" is printed over an abstract swarm. When the README says "text names relationships the picture can&rsquo;t carry," that&rsquo;s an admission, not a feature.</li>
+              <li class="m"><b>No failure state.</b> The wafer never breaks, the swarm never scatters, the receptor never misreads. Tension needs a moment where the chain <i>almost</i> doesn&rsquo;t hold.</li>
+            </ul>
+          </div>
+        </div>
+
+        <blockquote class="pull">
+          Pick one story. If the page is right that intelligence is plural, the film must end on
+          multiplicity &mdash; not on one ascending mind. Right now the companion undermines its host.
+        </blockquote>
+      </section>
+
+      <!-- =================== IMPLEMENTATION =================== -->
+      <section id="impl">
+        <div class="sheaf">
+          <div>
+            <p class="mono">03 &mdash; Implementation</p>
+            <h2 class="display title">The build is the<br /><em>best thing here.</em></h2>
+          </div>
+          <span class="mono meta">code &amp; performance</span>
+        </div>
+        <p style="max-width:62ch; color:var(--paper-72);">
+          This is where the project is most clearly ahead of its peers. The accessibility contract is
+          real and enforced, the performance policy is budgeted rather than assumed, and the WebGL
+          degrades honestly. The notes below are refinements to an already strong foundation &mdash;
+          the gaps are mostly in <i>robustness and reach</i>, not fundamentals.
+        </p>
+
+        <div class="pair" style="margin-top:2rem;">
+          <div class="pane">
+            <h3>Webpage engineering <span class="tag web">react &middot; three.js &middot; canvas</span></h3>
+            <ul class="thin">
+              <li class="p"><b>EnhancementBoundary is exemplary.</b> Treating WebGL/canvas as progressive enhancement with a real fallback message is the correct architecture and few projects actually do it.</li>
+              <li class="p"><b>Visibility &amp; pause hygiene.</b> IntersectionObserver + <code>document.hidden</code> gating on every loop, DPR capping, lite-mode frame throttling &mdash; the perf policy is lived, not written.</li>
+              <li class="m"><b>Scroll-spy reads the DOM every frame.</b> <code>Home.tsx</code> queries <code>offsetTop</code> on scroll; <code>MatterCurrent</code> does too. A shared IntersectionObserver store would cut layout thrash.</li>
+              <li class="m"><b>Global module-singleton audio.</b> <code>let actx</code> at module scope in FormsChapter is a latent cross-test and SSR hazard; a ref or context is cleaner.</li>
+              <li class="m"><b>No keyboard path into the canvases.</b> ARIA hides them (correctly), but there&rsquo;s no keyboard-equivalent affordance for pluck/draw/disturb &mdash; the "play" half is mouse-only.</li>
+              <li class="m"><b>Reduced-motion atlas is thin.</b> Six coloured dots replacing the current is technically compliant but visually impoverished; reduced-motion readers get a noticeably lesser work.</li>
+            </ul>
+          </div>
+          <div class="pane">
+            <h3>MP4 engineering <span class="tag vid">remotion &middot; svg</span></h3>
+            <ul class="thin">
+              <li class="p"><b>Deterministic, frame-based everything.</b> Seeded noise and frame math mean the render is reproducible and reviewable &mdash; the right discipline for a film.</li>
+              <li class="p"><b>SVG-first keeps it crisp.</b> Vector scenes scale to any resolution and stay editable; smart for a 9:16 that may be re-versioned.</li>
+              <li class="m"><b>Static city &amp; scene data computed at module load.</b> <code>CITY</code>, <code>NEURONS</code>, <code>EDGES</code> are built once &mdash; fine, but large and unreadable in source; a generator function would document intent.</li>
+              <li class="m"><b>Frame literals are magic numbers.</b> Scene transitions are hand-tuned constants (990, 1125, 1285&hellip;) with no shared timeline object; drift between scenes is easy and hard to spot.</li>
+              <li class="m"><b>One render, one aspect.</b> A single 9:16 MP4 is produced. No square or 16:9 cut for different surfaces limits how the film can travel.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================== QUADRANT PLOT =================== -->
+      <section id="plot">
+        <div class="sheaf">
+          <div>
+            <p class="mono">04 &mdash; The map</p>
+            <h2 class="display title">Twenty improvements,<br />two <em>axes.</em></h2>
+          </div>
+          <span class="mono meta">interactive</span>
+        </div>
+        <p style="max-width:64ch; color:var(--paper-72);">
+          Each dot is one improvement, plotted on two dimensions that matter most for this project:
+          <b style="color:var(--sand)">ambition</b> (incremental tweak &rarr; structural reinvention)
+          and <b style="color:var(--sea)">narrative leverage</b> (polish &rarr; changes what the work
+          <i>means</i>). The upper-right is where the bold bets live. Hover or tap a point to read it.
+        </p>
+
+        <div class="plot-wrap">
+          <div class="plot-frame" id="plot" role="img"
+               aria-label="Scatter plot of twenty improvements by ambition and narrative leverage">
+            <span class="quad-label" style="top:0;left:0">high leverage &middot; safe</span>
+            <span class="quad-label" style="top:0;right:0">high leverage &middot; bold</span>
+            <span class="quad-label" style="bottom:0;left:0">polish &middot; safe</span>
+            <span class="quad-label" style="bottom:0;right:0">polish &middot; bold</span>
+            <span class="ax-title x">ambition &nbsp;&larr; incremental &nbsp;&#124;&nbsp; structural &rarr;</span>
+            <span class="ax-title y">narrative leverage &nbsp;&larr; polish &nbsp;&#124;&nbsp; meaning &rarr;</span>
+            <!-- points injected by JS -->
+          </div>
+          <div class="qlegend">
+            <span><i class="web"></i> webpage</span>
+            <span><i class="vid"></i> mp4</span>
+            <span><i class="both"></i> both</span>
+          </div>
+        </div>
+
+        <div class="qcard" id="qcard" aria-live="polite">
+          <div class="qh">
+            <span class="qid" id="qc-id">&mdash;</span>
+            <span class="qtag" id="qc-tag">hover a point</span>
+          </div>
+          <h4 id="qc-title">Twenty improvements mapped</h4>
+          <p id="qc-body">Points in the upper-right quadrant are the boldest, highest-leverage moves &mdash; the ones that would change what the work <i>is</i>, not just how it looks.</p>
+          <div class="impact" id="qc-impact" hidden>
+            <span><b>Effort:</b> <span id="qc-effort"></span></span>
+            <span><b>Payoff:</b> <span id="qc-payoff"></span></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================== RECOMMENDATIONS =================== -->
+      <section id="recs">
+        <div class="sheaf">
+          <div>
+            <p class="mono">05 &middot; the series</p>
+            <h2 class="display title">Eight bets,<br /><em>in priority order.</em></h2>
+          </div>
+          <span class="mono meta">recommendations</span>
+        </div>
+        <p style="max-width:64ch; color:var(--paper-72);">
+          Ordered by how much each would change the work for the effort. The first three are
+          structural and touch the meaning; the last five are craft and reach. Each names the medium
+          it belongs to.
+        </p>
+
+        <div class="ladder" style="margin-top:1.8rem;">
+          <div class="rung">
+            <div class="rung__n">1</div>
+            <div class="rung__b">
+              <h4>Make the webpage and the film tell <i>one</i> story.<span class="for both">both</span></h4>
+              <p>
+                Reconcile the contradiction. If the thesis is <i>plurality</i> (the page is right),
+                re-cut the film&rsquo;s ending from a single ascending sensorium into a genuine
+                <b>multiplicity</b> &mdash; several simultaneous, incompatible minds, none privileged.
+                Mirror it on the page by letting the finale <i>split</i> the matter current into
+                concurrent divergent forms instead of one calm column of light. One claim, two media.
+              </p>
+              <p class="gain"><b>Why first:</b> this is the only fix that changes what the work <i>means</i>. Everything else is craft on top of a split claim.</p>
+            </div>
+          </div>
+
+          <div class="rung">
+            <div class="rung__n">2</div>
+            <div class="rung__b">
+              <h4>Put the thesis in chapter 1, and let a form <i>fail</i>.<span class="for web">web</span></h4>
+              <p>
+                State "the interface shapes the encounter" in the hero &mdash; as a promise, not a
+                reveal &mdash; so every chapter reads as evidence. Then add stakes: let at least one
+                form <b>distort or misread</b> the matter (a chemical plume that confuses, a gesture
+                that gets reinterpreted wrongly). Right now every encounter is benign, which is why
+                the argument feels soft. A single moment of friction would make the thesis land.
+              </p>
+              <p class="gain"><b>Gain:</b> emotional and intellectual weight; the essay acquires a spine instead of a mood.</p>
+            </div>
+          </div>
+
+          <div class="rung">
+            <div class="rung__n">3</div>
+            <div class="rung__b">
+              <h4>Give each chapter a <i>contrasting</i> visual register.<span class="for web">web</span></h4>
+              <p>
+                Break the "glowing dots on black" monoculture. Commit each chapter to one bold,
+                different image: Scent as a literal photographic plume / smoke; Forms as a real
+                instrument-rack UI with sliders and readouts; Shapeshift as a wireframe isometric
+                city (already in the film &mdash; port it). The matter current can stay as the
+                connective thread <i>underneath</i>, but the foreground should stop rhyming with itself.
+              </p>
+              <p class="gain"><b>Gain:</b> memorability; each chapter becomes distinct rather than a recolour.</p>
+            </div>
+          </div>
+
+          <div class="rung">
+            <div class="rung__n">4</div>
+            <div class="rung__b">
+              <h4>Give the film a sound design (and a score for the music chapter).<span class="for vid">mp4</span></h4>
+              <p>
+                A film whose thesis is "a machine learns the language of <b>sound</b> and chemicals"
+                cannot be silent. Compose a minimal score &mdash; granular textures for sand, a tonal
+                motif that the <i>music ribbons</i> scene literally plays, sub-bass for the city rise.
+                Ship a muted-by-default web embed <b>and</b> a sound-on versions for social. The scene
+                that shows ribbons should be the scene where sound becomes diegetic.
+              </p>
+              <p class="gain"><b>Gain:</b> the film stops contradicting itself; emotional ceiling rises sharply.</p>
+            </div>
+          </div>
+
+          <div class="rung">
+            <div class="rung__n">5</div>
+            <div class="rung__b">
+              <h4>Add a keyboard path into every interaction.<span class="for web">web</span></h4>
+              <p>
+                Tab to focus a canvas, arrow keys to move a "probe" that plays the same role as the
+                pointer, space/enter to pluck or disturb. Expose the state in the a11y tree as live
+                values ("note: G4", "13 birds flocking"). The access contract is currently
+                read-complete but play-incomplete; closing that gap would make the essay genuinely
+                operable for keyboard and switch users, not just legible.
+              </p>
+              <p class="gain"><b>Gain:</b> real WCAG operability and a stronger conscience; rare among immersive sites.</p>
+            </div>
+          </div>
+
+          <div class="rung">
+            <div class="rung__n">6</div>
+            <div class="rung__b">
+              <h4>Make reduced motion a <i>designed</i> state, not a lesser one.<span class="for web">web</span></h4>
+              <p>
+                Replace the six-dot atlas with a real reduced-motion composition &mdash; a static,
+                high-craft material study (consider a single SVG per chapter, or a slow CSS gradient
+                drift that respects the preference). Reduced-motion readers currently get the
+                argument but almost none of the beauty; that&rsquo;s an equity gap hiding behind
+                compliance.
+              </p>
+              <p class="gain"><b>Gain:</b> parity of <i>craft</i>, not just of content.</p>
+            </div>
+          </div>
+
+          <div class="rung">
+            <div class="rung__n">7</div>
+            <div class="rung__b">
+              <h4>Add a shared timeline and multi-aspect renders.<span class="for vid">mp4</span></h4>
+              <p>
+                Extract the hand-tuned frame constants into one named <code>timeline</code> object
+                so transitions are auditable and scenes can&rsquo;t silently drift. Then render
+                1:1 and 16:9 cuts alongside 9:16 so the film can live on a landing hero, not only in
+                a vertical social slot. The composition is already aspect-agnostic SVG &mdash; the
+                cost is low.
+              </p>
+              <p class="gain"><b>Gain:</b> maintainability plus reach across surfaces.</p>
+            </div>
+          </div>
+
+          <div class="rung">
+            <div class="rung__n">8</div>
+            <div class="rung__b">
+              <h4>Replace offsetTop scroll-spy with an observer store.<span class="for web">web</span></h4>
+              <p>
+                Both <code>Home.tsx</code> and <code>MatterCurrent</code> read <code>offsetTop</code>
+                on scroll, forcing layout every frame. A single IntersectionObserver-based chapter
+                store (one observer feeding both consumers) removes the duplication, ends the
+                layout-thrash, and gives a natural place to hang the keyboard-focus probe from bet 5.
+              </p>
+              <p class="gain"><b>Gain:</b> smoother scrolling on low-end devices, cleaner architecture.</p>
+            </div>
+          </div>
+        </div>
+
+        <blockquote class="pull">
+          The engineering is already an A. Spend the next round of effort on the <i>story</i> &mdash;
+          that is where an excellent craft object becomes a piece of work people remember.
+        </blockquote>
+      </section>
+
+      <p class="foot">
+        Critical review &middot; written from a first-hand read of <code>src/</code> and <code>video/</code>
+        &middot; <i>The Shape of Intelligence</i>
+      </p>
+    </main>
+
+    <script>
+      // ---- improvement dataset ----
+      // x: ambition 0(incremental)..100(structural) ; y: narrative leverage 0(polish)..100(meaning)
+      const IMPROVEMENTS = [
+        { id:"1",  m:"both", x:88, y:92, title:"Reconcile the two stories into one claim",
+          body:"Make webpage and film argue the same thesis. If plurality is the claim, re-cut the film's transcendent ending into genuine multiplicity and let the page's finale split the matter current into divergent concurrent forms.",
+          effort:"high", payoff:"changes the meaning" },
+        { id:"2",  m:"web",  x:74, y:88, title:"Front-load the thesis; let a form fail",
+          body:"State 'the interface shapes the encounter' in the hero, not the finale. Introduce stakes by letting at least one encounter distort or misread the matter, so the argument has friction instead of only wonder.",
+          effort:"medium", payoff:"adds a spine" },
+        { id:"3",  m:"web",  x:80, y:76, title:"Give each chapter a contrasting visual register",
+          body:"Break the 'glowing dots on black' monoculture. Commit each chapter to a distinct image: photographic plume, real instrument UI, isometric city. Keep the matter current as the connective thread underneath.",
+          effort:"high", payoff:"memorability" },
+        { id:"4",  m:"vid",  x:66, y:90, title:"Score the film; make sound diegetic",
+          body:"A film about music and chemical language cannot be silent. Compose granular + tonal sound, let the music-ribbon scene literally play its motif. Ship muted-by-default plus a sound-on social cut.",
+          effort:"high", payoff:"stops self-contradiction" },
+        { id:"5",  m:"web",  x:52, y:82, title:"Add a keyboard path into every canvas",
+          body:"Tab-focusable canvases with an arrow-key probe that mirrors the pointer, space/enter to pluck or disturb, live-region state readouts. Closes the operability gap for keyboard and switch users.",
+          effort:"medium", payoff:"real operability" },
+        { id:"6",  m:"web",  x:48, y:64, title:"Design a rich reduced-motion state",
+          body:"Replace the six-dot atlas with crafted static SVG studies or a slow gradient drift that respects the preference. Parity of craft, not just of content, for reduced-motion readers.",
+          effort:"medium", payoff:"craft equity" },
+        { id:"7",  m:"vid",  x:30, y:40, title:"Shared timeline object + multi-aspect renders",
+          body:"Extract hand-tuned frame constants into one auditable timeline; render 1:1 and 16:9 cuts alongside 9:16 so the film can live on a hero, not only a vertical social slot.",
+          effort:"low", payoff:"reach + maintainability" },
+        { id:"8",  m:"web",  x:26, y:30, title:"Observer-based scroll-spy store",
+          body:"Replace per-frame offsetTop reads in Home.tsx and MatterCurrent with one IntersectionObserver store feeding both. Ends layout thrash and gives a home for the keyboard probe.",
+          effort:"low", payoff:"smoothness + cleanup" },
+        { id:"9",  m:"web",  x:40, y:52, title:"Split overloaded FormsChapter",
+          body:"Five ideas (rhythm/art/math/science/nature) in one chapter dilutes each. Promote two to their own chapters or fold them into neighbours, so the arc breathes and no single section dominates.",
+          effort:"medium", payoff:"pacing" },
+        { id:"10", m:"web",  x:34, y:46, title:"Break the repeated instrument grid",
+          body:"The DESIGN doc forbids identical card grids, yet FormsChapter ships five near-identical tiles. Vary scale, asymmetry, and full-bleed vs inset so the rack reads as composed, not templated.",
+          effort:"low", payoff:"composition" },
+        { id:"11", m:"vid",  x:44, y:58, title:"Make the brain and insects more literal",
+          body:"The README promises identifiable organisms and tools, but delivers an abstract plexus and triangles. Push toward recognisable anatomy/material to raise stakes and reward a second viewing.",
+          effort:"medium", payoff:"legibility + awe" },
+        { id:"12", m:"vid",  x:58, y:70, title:"Introduce a moment of failure",
+          body:"Let the wafer crack, the swarm scatter, or the receptor misread once, before reforming. Tension requires the chain to almost break; right now nothing is ever at risk.",
+          effort:"medium", payoff:"dramatic stakes" },
+        { id:"13", m:"both", x:60, y:60, title:"Let image carry meaning text currently does",
+          body:"'It speaks in chemicals' is printed over an abstract swarm. Invest in visuals strong enough that the caption becomes confirmation rather than explanation.",
+          effort:"high", payoff:"show don't tell" },
+        { id:"14", m:"web",  x:36, y:38, title:"Bolder verbs in the copy",
+          body:"'Appears to change' and 'seems to be' over-hedge a sound claim. Sharper verbs carry more truth, not less, and match the confidence of the art direction.",
+          effort:"low", payoff:"voice" },
+        { id:"15", m:"web",  x:22, y:26, title:"Move audio context out of module scope",
+          body:"The shared `actx` singleton in FormsChapter is a latent SSR/test hazard. Move it into a ref or a small audio context module with explicit lifecycle.",
+          effort:"low", payoff:"robustness" },
+        { id:"16", m:"vid",  x:20, y:20, title:"Generate scene data in named functions",
+          body:"CITY, NEURONS, EDGES are computed at module load as big arrays. Wrap them in named generators so intent is documented and the data is parameterisable.",
+          effort:"low", payoff:"readability" },
+        { id:"17", m:"web",  x:28, y:20, title:"Consider a 'guided tour' mode",
+          body:"A play-button that auto-scrolls and narrates turns the essay into a film-like experience for readers who won't explore manually, broadening audience without changing the core.",
+          effort:"medium", payoff:"reach" },
+        { id:"18", m:"both", x:70, y:54, title:"Cross-link the media explicitly",
+          body:"Make the film and page reference each other: an in-page chapter that embeds the matching film beat, and a film endcard that deep-links into the relevant chapter. They currently only share a palette.",
+          effort:"medium", payoff:"integration" },
+        { id:"19", m:"web",  x:18, y:34, title:"Sharpen social preview",
+          body:"The OG image is a relative SVG and the copy is generic. A bespoke, striking still (the matter current mid-transform) would raise click-through and set expectations correctly.",
+          effort:"low", payoff:"distribution" },
+        { id:"20", m:"both", x:78, y:80, title:"End on the reader's own encounter",
+          body:"Instead of a declarative coda, end by turning the lens on the reader: 'what form are you meeting it in right now?' Make the conclusion participatory rather than authoritative.",
+          effort:"medium", payoff:"resonance" },
+      ];
+
+      const plot = document.getElementById("plot");
+      const card = {
+        id: document.getElementById("qc-id"),
+        tag: document.getElementById("qc-tag"),
+        title: document.getElementById("qc-title"),
+        body: document.getElementById("qc-body"),
+        impact: document.getElementById("qc-impact"),
+        effort: document.getElementById("qc-effort"),
+        payoff: document.getElementById("qc-payoff"),
+      };
+      const TAG_LABEL = { web:"webpage", vid:"mp4", both:"both" };
+
+      // padding so points don't kiss the edge
+      const PAD = 9;
+      function place(p) {
+        const x = PAD + (p.x / 100) * (100 - PAD * 2);
+        const y = PAD + (1 - p.y / 100) * (100 - PAD * 2); // invert y
+        return { left: x + "%", top: y + "%" };
+      }
+
+      IMPROVEMENTS.forEach((p) => {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "pt " + p.m;
+        dot.dataset.id = p.id;
+        dot.setAttribute("aria-label", `Improvement ${p.id}: ${p.title}`);
+        const pos = place(p);
+        dot.style.left = pos.left;
+        dot.style.top = pos.top;
+        const show = () => {
+          document.querySelectorAll(".pt").forEach((d) => d.classList.remove("active"));
+          dot.classList.add("active");
+          card.id.textContent = p.id;
+          card.tag.textContent = TAG_LABEL[p.m];
+          card.title.textContent = p.title;
+          card.body.textContent = p.body;
+          card.impact.hidden = false;
+          card.effort.textContent = p.effort;
+          card.payoff.textContent = p.payoff;
+        };
+        dot.addEventListener("mouseenter", show);
+        dot.addEventListener("focus", show);
+        dot.addEventListener("click", show);
+        plot.appendChild(dot);
+      });
+
+      // keyboard: left/right/up/down to move between points spatially
+      const dots = Array.from(document.querySelectorAll(".pt"));
+      plot.addEventListener("keydown", (e) => {
+        if (!["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) return;
+        const focused = document.activeElement;
+        if (!focused || !focused.classList.contains("pt")) return;
+        const cur = IMPROVEMENTS.find((p) => p.id === focused.dataset.id);
+        if (!cur) return;
+        let best = null, bestD = Infinity;
+        for (const p of IMPROVEMENTS) {
+          if (p.id === cur.id) continue;
+          const dx = p.x - cur.x, dy = p.y - cur.y;
+          const match =
+            (e.key === "ArrowRight" && dx > 1) ||
+            (e.key === "ArrowLeft" && dx < -1) ||
+            (e.key === "ArrowUp" && dy > 1) ||
+            (e.key === "ArrowDown" && dy < -1);
+          if (!match) continue;
+          const d = Math.hypot(dx, dy);
+          if (d < bestD) { bestD = d; best = p; }
+        }
+        if (best) {
+          e.preventDefault();
+          const next = dots.find((d) => d.dataset.id === best.id);
+          next && next.focus();
+        }
+      });
+    </script>
+  </body>
+</html>

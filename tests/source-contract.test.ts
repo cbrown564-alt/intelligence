@@ -27,7 +27,7 @@ describe('release contracts', () => {
     const source = sources.flat(2).join('\n')
     const tags = source.match(/<canvas[\s\S]*?\/>/g) ?? []
 
-    expect(tags.length).toBeGreaterThanOrEqual(8)
+    expect(tags.length).toBeGreaterThanOrEqual(7)
     for (const tag of tags) expect(tag).toContain('aria-hidden="true"')
   })
 
@@ -54,5 +54,37 @@ describe('release contracts', () => {
     expect(source).not.toMatch(/minds we made|sand (?:can learn|how) to think|whole trick of intelligence/i)
     expect(source).not.toMatch(/whatever we dare|not another chatbox|latent space/i)
     expect(source).toContain('Towers rise from dust')
+  })
+
+  it('pins the governing claim across the webpage, film, captions, and transcript', async () => {
+    const [hero, chapters, film, captions, transcript] = await Promise.all([
+      readFile(path.join(root, 'src', 'sections', 'Hero.tsx'), 'utf8'),
+      readFile(path.join(root, 'src', 'content', 'chapters.ts'), 'utf8'),
+      readFile(path.join(root, 'video', 'ShapeOfIntelligenceVideo.tsx'), 'utf8'),
+      readFile(path.join(root, 'video', 'shape-of-intelligence.en.srt'), 'utf8'),
+      readFile(path.join(root, 'video', 'transcript.md'), 'utf8'),
+    ])
+
+    expect(hero).toContain('What does each form reveal—and what does it hide?')
+    expect(chapters).toContain(
+      'Every form reveals something and obscures something else.'
+    )
+    for (const source of [film, captions, transcript]) {
+      expect(source).toContain('New senses bring')
+      expect(source).toContain('different machine into view.')
+      expect(source).not.toMatch(/a mind can inhabit|ascending mind/i)
+    }
+  })
+
+  it('keeps Forms to three primary instruments with audience-facing indices', async () => {
+    const forms = await readFile(
+      path.join(root, 'src', 'sections', 'FormsChapter.tsx'),
+      'utf8'
+    )
+
+    expect(forms.match(/<Instrument\b/g)).toHaveLength(3)
+    expect(forms).not.toMatch(/[αβγδε]/)
+    expect(forms).toContain('Rhythm. Pattern.')
+    expect(forms).toContain('Flock.')
   })
 })
