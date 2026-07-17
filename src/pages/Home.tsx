@@ -6,7 +6,6 @@ import {
   ExperienceControls,
   ExperiencePreferencesProvider,
 } from '@/components/ExperiencePreferences';
-import { References } from '@/components/References';
 import { MatterCurrent } from '@/components/MatterCurrent';
 import { CHAPTERS } from '@/content/chapters';
 
@@ -16,9 +15,6 @@ const TouchChapter = lazy(() =>
 const FormsChapter = lazy(() =>
   import('@/sections/FormsChapter').then((module) => ({ default: module.FormsChapter }))
 );
-const SandChapter = lazy(() =>
-  import('@/sections/SandChapter').then((module) => ({ default: module.SandChapter }))
-);
 const SmellChapter = lazy(() =>
   import('@/sections/SmellChapter').then((module) => ({ default: module.SmellChapter }))
 );
@@ -27,9 +23,6 @@ const ShapeshiftChapter = lazy(() =>
     default: module.ShapeshiftChapter,
   }))
 );
-const SlopChapter = lazy(() =>
-  import('@/sections/SlopChapter').then((module) => ({ default: module.SlopChapter }))
-);
 const Finale = lazy(() =>
   import('@/sections/Finale').then((module) => ({ default: module.Finale }))
 );
@@ -37,11 +30,9 @@ const Finale = lazy(() =>
 const LAZY_CHAPTERS = [
   { chapter: CHAPTERS[1], component: TouchChapter },
   { chapter: CHAPTERS[2], component: FormsChapter },
-  { chapter: CHAPTERS[3], component: SandChapter },
-  { chapter: CHAPTERS[4], component: SmellChapter },
-  { chapter: CHAPTERS[5], component: ShapeshiftChapter },
-  { chapter: CHAPTERS[6], component: SlopChapter },
-  { chapter: CHAPTERS[7], component: Finale },
+  { chapter: CHAPTERS[3], component: SmellChapter },
+  { chapter: CHAPTERS[4], component: ShapeshiftChapter },
+  { chapter: CHAPTERS[5], component: Finale },
 ] as const;
 
 function Essay() {
@@ -126,7 +117,6 @@ function Essay() {
         Skip to the essay
       </a>
       <main className="relative bg-ink text-paper antialiased">
-        <div className="grain" aria-hidden="true" />
         <MatterCurrent active={active} />
 
         <header className="masthead">
@@ -142,7 +132,6 @@ function Essay() {
         {LAZY_CHAPTERS.map(({ chapter, component }) => (
           <LazyChapter key={chapter.id} chapter={chapter} component={component} />
         ))}
-        <References />
       </main>
     </>
   );

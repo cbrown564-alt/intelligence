@@ -3,7 +3,6 @@ import { isLiteExperience, startCanvas2D } from '@/lib/canvas';
 import { fbm2 } from '@/lib/noise';
 import { ChapterHead } from '@/components/ChapterHead';
 import { Reveal } from '@/components/Reveal';
-import { Footnote } from '@/components/References';
 
 interface Molecule {
   x: number;
@@ -155,17 +154,10 @@ export function SmellChapter() {
         <ChapterHead
           title={
             <>
-              Teaching computers <em className="text-sea">how to smell</em>.
+              What can a machine <em className="text-sea">smell</em>?
             </>
           }
-          lede={
-            <>
-              Not every machine intelligence needs to speak in words. Experimental
-              sensor arrays and statistical models can distinguish patterns of
-              volatile compounds in breath samples.<Footnote reference="ref-breath" />
-              These are research systems, not standalone cancer diagnoses.
-            </>
-          }
+          lede="A scent leaves no image. It drifts, thins, mingles, and disappears. Move through the plume and watch the invisible take shape."
         />
       </div>
 
@@ -173,7 +165,7 @@ export function SmellChapter() {
         <canvas ref={canvasRef} className="canvas-cover touch-pan" aria-hidden="true" />
         <div className="pointer-events-none absolute bottom-5 left-6 flex items-center gap-3">
           <span className="font-mono-label text-xs tracking-[0.12em] text-sea uppercase">
-            exhale · the plume reads you
+            move through the chemical plume
           </span>
           <span className="h-px w-10 bg-sea/30" />
         </div>
@@ -182,10 +174,9 @@ export function SmellChapter() {
       <div className="relative mx-auto max-w-7xl px-6 py-24">
         <Reveal>
           <p className="max-w-xl text-sm leading-relaxed text-paper/70 font-light">
-            Long before electronic noses, bacteria were already moving in response
-            to chemical gradients through chemotaxis.<Footnote reference="ref-chemotaxis" />
-            Sensor arrays give machines access to a chemical spectrum{' '}
-            <span className="text-sea">we were never able to perceive</span>.
+            To smell is to read a field in motion. Here, scattered traces become{' '}
+            <span className="text-sea">a pattern you can disturb</span>. The plume
+            never holds still long enough to become a picture.
           </p>
         </Reveal>
       </div>

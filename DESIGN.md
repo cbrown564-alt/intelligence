@@ -41,15 +41,13 @@ One small, persistent particle field connects the chapters. It does not introduc
 - Shape: an orbital body.
 - Touch: a force-carrying stream.
 - Forms: a wave and signal.
-- Silicon: a crystal lattice.
 - Scent: a widening chemical plume.
 - Shapeshift: a procedural skyline.
-- Slop: incoherent noise.
 - Vision: a coherent column of light.
 
 Scroll supplies the transformation progress rather than merely triggering entrances. Pointer proximity bends the field; pressing creates a stronger disturbance; release lets it reform. The hero and conclusion lower the field's opacity because their central compositions and prose already own those scenes.
 
-Reduced motion replaces the current with a quiet eight-point material atlas. No canvas is created.
+Reduced motion replaces the current with a quiet six-point material atlas. No canvas is created.
 
 ## Composition
 
@@ -57,10 +55,8 @@ Chapter art direction should follow its subject:
 
 - Touch: a wide field that invites direct manipulation.
 - Forms: an instrument rack with alternating visual and explanatory zones.
-- Silicon: circuitry as landscape, with the material claim explicitly sourced.
 - Scent: a lateral plume moving from emitter to interpretation.
 - Shapeshift: a horizon-scale procedural scene.
-- Slop: one deliberate long-scroll degradation, replaced by a direct verdict in reduced motion.
 - Vision: a single centered conclusion and calm coda.
 
 Do not restore identical card grids, repeated numbered heading markers, decorative monospace, or entrance motion on every section.

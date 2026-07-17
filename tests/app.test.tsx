@@ -1,6 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '@/App'
+import { EnhancementBoundary } from '@/components/EnhancementBoundary'
+
+function BrokenEnhancement() {
+  throw new Error('chapter failed')
+}
 
 describe('The Shape of Intelligence', () => {
   beforeEach(() => {
@@ -14,20 +19,30 @@ describe('The Shape of Intelligence', () => {
     expect(
       screen.getByRole('heading', { name: 'What is the shape of intelligence?' })
     ).toBeVisible()
-    expect(screen.getByText(/through silicon shaped into machines/i)).toBeVisible()
+    expect(screen.getByText(/pattern caught by a sensor/i)).toBeVisible()
     expect(screen.getByRole('heading', { name: 'Can we touch it?' })).toBeVisible()
     expect(
-      screen.getByRole('heading', { name: 'Teaching computers how to smell.' })
+      screen.getByRole('heading', { name: 'What can a machine smell?' })
     ).toBeVisible()
-    expect(screen.getByRole('heading', { name: 'Sources, not scenery.' })).toBeVisible()
+    expect(screen.queryByRole('heading', { name: 'Sources, not scenery.' })).not.toBeInTheDocument()
     expect(document.querySelector('.matter-current canvas')).not.toBeInTheDocument()
-    expect(document.querySelectorAll('.matter-atlas span')).toHaveLength(8)
+    expect(document.querySelectorAll('.matter-atlas span')).toHaveLength(6)
+    expect(document.querySelectorAll('[data-static-artwork]')).toHaveLength(5)
+    expect(
+      new Set(
+        Array.from(document.querySelectorAll('[data-static-artwork]')).map((node) =>
+          node.getAttribute('data-static-artwork')
+        )
+      ).size
+    ).toBe(5)
+    expect(screen.queryByText(/interactive layer paused/i)).not.toBeInTheDocument()
   })
 
   it('provides chapter navigation and persistent experience controls', () => {
     render(<App />)
 
     expect(screen.getByRole('navigation', { name: 'Essay chapters' })).toBeVisible()
+    expect(screen.getByRole('navigation', { name: 'Chapter controls' })).toBeVisible()
     expect(screen.getAllByRole('link', { name: /Shape/i }).length).toBeGreaterThan(0)
 
     const motion = screen.getByRole('button', { name: /Motion off/i })
@@ -48,20 +63,15 @@ describe('The Shape of Intelligence', () => {
     )
   })
 
-  it('links every factual note to a visible primary or authoritative source', () => {
-    render(<App />)
+  it('keeps the semantic fallback when an enhancement fails', () => {
+    const report = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    render(
+      <EnhancementBoundary label="Test study" fallback={<p>Static study remains available.</p>}>
+        <BrokenEnhancement />
+      </EnhancementBoundary>
+    )
 
-    expect(screen.getByRole('link', { name: /Silicon Statistics and Information/i })).toHaveAttribute(
-      'href',
-      expect.stringContaining('usgs.gov')
-    )
-    expect(screen.getByRole('link', { name: /Detection of lung, breast/i })).toHaveAttribute(
-      'href',
-      expect.stringContaining('nature.com')
-    )
-    expect(screen.getByRole('link', { name: 'Chemotaxis in bacteria' })).toHaveAttribute(
-      'href',
-      expect.stringContaining('pubmed.ncbi.nlm.nih.gov')
-    )
+    expect(screen.getByText('Static study remains available.')).toBeVisible()
+    report.mockRestore()
   })
 })

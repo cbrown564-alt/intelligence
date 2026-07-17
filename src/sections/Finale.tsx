@@ -104,22 +104,24 @@ export function Finale() {
     <section id="vision" className="relative bg-ink overflow-hidden">
       <div className="relative h-[100svh]">
         <canvas ref={canvasRef} className="canvas-cover touch-pan" aria-hidden="true" />
-        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+        <div className="finale-copy pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
           <Reveal delay={150}>
             <h2 className="font-serif-display text-paper font-light leading-[1.05] text-5xl md:text-7xl max-w-4xl">
-              We need a <em className="text-sand glow-sand">clear vision</em>.
+              Intelligence arrives in
+              <em className="text-sand glow-sand"> the forms we make for it</em>.
             </h2>
           </Reveal>
           <Reveal delay={450}>
             <h2 className="font-serif-display text-paper font-light leading-[1.05] text-5xl md:text-7xl max-w-4xl mt-3">
-              We need <em className="text-violet-glow glow-violet">inspiration</em>.
+              Each form brings something
+              <em className="text-violet-glow glow-violet"> into view</em> and lets
+              something else fall away.
             </h2>
           </Reveal>
           <Reveal delay={800}>
             <p className="mt-12 max-w-md text-sm md:text-base leading-relaxed text-paper/75 font-light">
-              Not another chatbox. Not another demo. A way of meeting this mind
-              that is tactile, visual, musical — worthy of the fact that we
-              taught sand to think, and it answered.
+              A voice. A gesture. A chemical trace. A field of light. Change the
+              encounter and the machine appears to change with it.
             </p>
           </Reveal>
         </div>
@@ -134,7 +136,7 @@ export function Finale() {
           </Reveal>
           <Reveal delay={200}>
             <p className="font-serif-display text-2xl md:text-4xl font-light text-sand glow-sand">
-              Whatever we dare to give it.
+              Whatever shape we give the encounter.
             </p>
           </Reveal>
           <Reveal delay={400}>
@@ -144,7 +146,7 @@ export function Finale() {
                 the shape of intelligence · a visual essay
               </p>
               <p className="font-mono-label text-xs tracking-[0.12em] uppercase text-paper/65">
-                particles · waveforms · phyllotaxis · boids · sand
+                sound · pattern · chemical signals · structure · light
               </p>
               <a
                 href="#shape"

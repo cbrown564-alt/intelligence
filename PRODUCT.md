@@ -17,11 +17,10 @@ A reader can understand the complete argument without WebGL, canvas motion, audi
 ## Primary journey
 
 1. Meet the opening question and understand how to proceed.
-2. Move through eight clearly named chapters.
-3. Follow one field of matter as it becomes force, signal, crystal, chemical, structure, noise, and light.
+2. Move through six clearly named chapters.
+3. Follow one field of matter as it becomes force, signal, chemical, structure, and light.
 4. Optionally disturb that field and interact with simulations that embody each chapter's idea.
-5. Encounter sourced factual notes without leaving the narrative.
-6. Leave with the conclusion that intelligence's form is partly determined by what people build around it.
+5. Leave with the sense that intelligence changes with the form of the encounter.
 
 ## Non-goals
 
@@ -42,4 +41,3 @@ Web. The quality bar is flagship: strong art direction, readable and operable at
 - The persistent matter current remains subordinate to prose and chapter-specific imagery at desktop, tablet, and mobile sizes.
 - Initial JavaScript remains below 150 KB gzip.
 - Build, lint, source contracts, and semantic smoke tests pass from a clean install.
-- Every factual, medical, and attributed claim has a visible source.

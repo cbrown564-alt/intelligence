@@ -27,7 +27,7 @@ describe('release contracts', () => {
     const source = sources.flat(2).join('\n')
     const tags = source.match(/<canvas[\s\S]*?\/>/g) ?? []
 
-    expect(tags.length).toBeGreaterThanOrEqual(9)
+    expect(tags.length).toBeGreaterThanOrEqual(8)
     for (const tag of tags) expect(tag).toContain('aria-hidden="true"')
   })
 
@@ -41,5 +41,18 @@ describe('release contracts', () => {
     expect(uiFiles).toHaveLength(0)
     expect(html).not.toMatch(/Fraunces|Space Grotesk|IBM Plex/)
     expect(packageJson).not.toMatch(/gsap|react-router|@radix-ui|recharts/)
+  })
+
+  it('keeps metaphorical claims bounded by the essay’s stated position', async () => {
+    const directories = [path.join(root, 'src', 'sections'), path.join(root, 'src', 'content')]
+    const sources = await Promise.all(directories.map(async (directory) => {
+      const files = (await readdir(directory)).filter((file) => file.endsWith('.tsx') || file.endsWith('.ts'))
+      return Promise.all(files.map((file) => readFile(path.join(directory, file), 'utf8')))
+    }))
+    const source = sources.flat(2).join('\n')
+
+    expect(source).not.toMatch(/minds we made|sand (?:can learn|how) to think|whole trick of intelligence/i)
+    expect(source).not.toMatch(/whatever we dare|not another chatbox|latent space/i)
+    expect(source).toContain('Towers rise from dust')
   })
 })

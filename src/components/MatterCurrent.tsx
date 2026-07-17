@@ -15,10 +15,8 @@ const COLORS = [
   [232, 179, 106],
   [232, 179, 106],
   [184, 173, 255],
-  [190, 173, 255],
   [134, 228, 202],
   [167, 151, 255],
-  [221, 120, 112],
   [239, 220, 177],
 ] as const;
 
@@ -26,10 +24,8 @@ const MATERIALS: Record<string, string> = {
   shape: 'matter',
   touch: 'force',
   forms: 'signal',
-  silicon: 'crystal',
   scent: 'chemical',
   shapeshift: 'structure',
-  slop: 'noise',
   vision: 'light',
 };
 
@@ -81,23 +77,13 @@ function targetFor(
       break;
     }
     case 3: {
-      const cols = Math.max(9, Math.round(Math.sqrt(count * 1.8)));
-      const rows = Math.ceil(count / cols);
-      const col = index % cols;
-      const row = Math.floor(index / cols);
-      const spacing = Math.min((radius * 1.75) / cols, (radius * 1.65) / rows);
-      x = cx + (col - (cols - 1) / 2) * spacing + (row % 2) * spacing * 0.5;
-      y = cy + (row - (rows - 1) / 2) * spacing * 0.86;
-      break;
-    }
-    case 4: {
       const plume = Math.pow(u, 0.72);
       x = width * (0.12 + plume * 0.82);
       const spread = radius * (0.08 + plume * 0.72);
       y = cy + (seed - 0.5) * spread + Math.sin(seed * 23 + time * 0.23) * 7;
       break;
     }
-    case 5: {
+    case 4: {
       const towers = mobile ? 11 : 19;
       const tower = index % towers;
       const level = Math.floor(index / towers);
@@ -108,12 +94,6 @@ function targetFor(
       x = cx + (tower / (towers - 1) - 0.5) * radius * 2.05;
       x += (seed - 0.5) * Math.max(4, radius / towers);
       y = baseline - (level / Math.max(1, levels - 1)) * towerHeight;
-      break;
-    }
-    case 6: {
-      x = width * fract(seed * 17.13 + index * 0.037);
-      y = height * fract(seed * 31.71 + index * 0.071);
-      if (index % 5 === 0) x += Math.sin(time * (6 + seed * 8) + index) * 16;
       break;
     }
     default: {
@@ -257,7 +237,7 @@ export function MatterCurrent({ active }: { active: string }) {
         context.fill();
       }
 
-      if (from === 3 || to === 3 || from === 7) {
+      if (from === 4 || to === 4 || from === 5) {
         context.strokeStyle = `rgba(${red}, ${green}, ${blue}, 0.08)`;
         context.lineWidth = 0.5;
         for (let index = 0; index < particles.length - 1; index += 3) {

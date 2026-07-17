@@ -1,6 +1,5 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { isLiteExperience, startCanvas2D } from '@/lib/canvas';
-import { fbm2 } from '@/lib/noise';
 import { ChapterHead } from '@/components/ChapterHead';
 import { Reveal } from '@/components/Reveal';
 
@@ -129,66 +128,204 @@ function MusicCanvas() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  ART — flow field                                                   */
+/*  ART — interpretation                                               */
 /* ------------------------------------------------------------------ */
 
-function FlowCanvas() {
+function InterpretationCanvas({ revision }: { revision: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
-    let pts: { x: number; y: number; px: number; py: number; hue: number }[] = [];
-    let seeded = false;
-    const stop = startCanvas2D(canvas, (ctx, w, h, t, p) => {
-      if (!seeded) {
-        ctx.fillStyle = '#0a0a10';
-        ctx.fillRect(0, 0, w, h);
-        pts = Array.from({ length: isLiteExperience() ? 150 : 320 }, (_, i) => ({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          px: 0,
-          py: 0,
-          hue: [36, 258, 168, 340][i % 4],
-        }));
-        seeded = true;
+
+    type Point = { x: number; y: number };
+    let userGesture: Point[] = [];
+    let drawing = false;
+    const phase = revision * 1.731 + 0.64;
+
+    const appendGesturePoint = (event: PointerEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const point = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      const last = userGesture[userGesture.length - 1];
+      if (!last || Math.hypot(point.x - last.x, point.y - last.y) > 4) {
+        userGesture.push(point);
+        if (userGesture.length > 140) userGesture.shift();
       }
-      ctx.fillStyle = 'rgba(10,10,16,0.055)';
+    };
+    const onGestureStart = (event: PointerEvent) => {
+      drawing = true;
+      userGesture = [];
+      appendGesturePoint(event);
+    };
+    const onGestureMove = (event: PointerEvent) => {
+      if (drawing) appendGesturePoint(event);
+    };
+    const onGestureEnd = () => {
+      drawing = false;
+    };
+    canvas.addEventListener('pointerdown', onGestureStart);
+    canvas.addEventListener('pointermove', onGestureMove);
+    canvas.addEventListener('pointerleave', onGestureEnd);
+    window.addEventListener('pointerup', onGestureEnd);
+
+    const strokePath = (
+      ctx: CanvasRenderingContext2D,
+      points: Point[],
+      end: number,
+      color: string,
+      width: number
+    ) => {
+      if (end < 2) return;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let index = 1; index < end - 1; index++) {
+        const point = points[index];
+        const next = points[index + 1];
+        ctx.quadraticCurveTo(
+          point.x,
+          point.y,
+          (point.x + next.x) / 2,
+          (point.y + next.y) / 2
+        );
+      }
+      ctx.lineTo(points[end - 1].x, points[end - 1].y);
+      ctx.stroke();
+    };
+
+    const stop = startCanvas2D(canvas, (ctx, w, h, t) => {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = '#08080e';
       ctx.fillRect(0, 0, w, h);
-      ctx.lineWidth = 1.1;
-      for (const pt of pts) {
-        pt.px = pt.x;
-        pt.py = pt.y;
-        const a =
-          fbm2(pt.x * 0.004, pt.y * 0.004 + t * 0.03) * Math.PI * 4 + t * 0.12;
-        let vx = Math.cos(a) * 1.4;
-        let vy = Math.sin(a) * 1.4;
-        if (p.active) {
-          const dx = p.x - pt.x;
-          const dy = p.y - pt.y;
-          const d = Math.hypot(dx, dy);
-          if (d < 120 && d > 1) {
-            vx += (dx / d) * 1.1;
-            vy += (dy / d) * 1.1;
-          }
-        }
-        pt.x += vx;
-        pt.y += vy;
-        if (pt.x < 0) pt.x += w;
-        if (pt.x > w) pt.x -= w;
-        if (pt.y < 0) pt.y += h;
-        if (pt.y > h) pt.y -= h;
-        if (Math.abs(pt.x - pt.px) < w / 2 && Math.abs(pt.y - pt.py) < h / 2) {
-          ctx.strokeStyle = `hsla(${pt.hue + Math.sin(t * 0.3) * 20}, 70%, 68%, 0.5)`;
-          ctx.beginPath();
-          ctx.moveTo(pt.px, pt.py);
-          ctx.lineTo(pt.x, pt.y);
-          ctx.stroke();
+
+      const cx = w / 2;
+      const cy = h / 2;
+      const size = Math.min(w, h);
+      const wash = ctx.createRadialGradient(cx, cy, size * 0.04, cx, cy, size * 0.55);
+      wash.addColorStop(0, 'rgba(184,173,255,0.08)');
+      wash.addColorStop(0.52, 'rgba(134,228,202,0.025)');
+      wash.addColorStop(1, 'rgba(8,8,14,0)');
+      ctx.fillStyle = wash;
+      ctx.fillRect(0, 0, w, h);
+
+      const pointCount = isLiteExperience() ? 110 : 180;
+      const centers: Point[] = [];
+      const left: Point[] = [];
+      const right: Point[] = [];
+      const innerLeft: Point[] = [];
+      const innerRight: Point[] = [];
+
+      const centerAt = (u: number) => ({
+        x:
+          cx +
+          Math.sin((u - 0.5) * Math.PI * 1.28 + phase * 0.055) * size * 0.105 +
+          Math.sin(u * Math.PI * 5 + phase) * size * 0.012,
+        y:
+          h * (0.84 - u * 0.68) +
+          Math.cos(u * Math.PI * 2 + phase) * size * 0.014,
+      });
+
+      for (let index = 0; index < pointCount; index++) {
+        const u = index / (pointCount - 1);
+        const center = centerAt(u);
+        const next = centerAt(Math.min(1, u + 1 / (pointCount - 1)));
+        const length = Math.max(0.001, Math.hypot(next.x - center.x, next.y - center.y));
+        const nx = -(next.y - center.y) / length;
+        const ny = (next.x - center.x) / length;
+        const envelope = Math.pow(Math.sin(Math.PI * u), 0.72);
+        const width =
+          size * 0.285 * envelope * (0.96 + Math.sin(u * Math.PI * 6 + phase) * 0.055);
+        centers.push(center);
+        left.push({ x: center.x + nx * width, y: center.y + ny * width });
+        right.push({ x: center.x - nx * width, y: center.y - ny * width });
+        innerLeft.push({ x: center.x + nx * width * 0.58, y: center.y + ny * width * 0.58 });
+        innerRight.push({ x: center.x - nx * width * 0.58, y: center.y - ny * width * 0.58 });
+      }
+
+      const progress = 1 - Math.pow(1 - Math.min(1, t / 4.2), 4);
+      const end = Math.max(3, Math.min(pointCount, Math.floor(progress * pointCount)));
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(((revision % 5) - 2) * 0.018 + Math.sin(t * 0.18) * 0.004);
+      ctx.translate(-cx, -cy);
+      ctx.globalAlpha = userGesture.length > 2 ? 0.24 : 1;
+      ctx.globalCompositeOperation = 'screen';
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      ctx.fillStyle = 'rgba(184,173,255,0.032)';
+      ctx.beginPath();
+      ctx.moveTo(left[0].x, left[0].y);
+      for (let index = 1; index < end; index++) ctx.lineTo(left[index].x, left[index].y);
+      for (let index = end - 1; index >= 0; index--) ctx.lineTo(right[index].x, right[index].y);
+      ctx.closePath();
+      ctx.fill();
+
+      strokePath(ctx, left, end, 'rgba(184,173,255,0.72)', 1.25);
+      strokePath(ctx, right, end, 'rgba(134,228,202,0.58)', 1.1);
+      strokePath(ctx, innerLeft, end, 'rgba(237,231,218,0.22)', 0.8);
+      strokePath(ctx, innerRight, end, 'rgba(237,231,218,0.18)', 0.8);
+      strokePath(ctx, centers, end, 'rgba(232,179,106,0.88)', 2.35);
+
+      const ribStep = isLiteExperience() ? 13 : 9;
+      for (let index = ribStep; index < end - 2; index += ribStep) {
+        const strength = Math.sin((index / pointCount) * Math.PI);
+        ctx.strokeStyle = `rgba(237,231,218,${0.055 + strength * 0.12})`;
+        ctx.lineWidth = 0.72;
+        ctx.beginPath();
+        ctx.moveTo(left[index].x, left[index].y);
+        ctx.quadraticCurveTo(centers[index].x, centers[index].y, right[index].x, right[index].y);
+        ctx.stroke();
+
+        ctx.fillStyle = index % (ribStep * 2) === 0 ? '#e8b36a' : '#b8adff';
+        ctx.globalAlpha = (userGesture.length > 2 ? 0.24 : 1) * (0.34 + strength * 0.38);
+        ctx.beginPath();
+        ctx.arc(left[index].x, left[index].y, 1.45, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      if (userGesture.length > 2) {
+        const reinterpret = (angle: number, scale: number, mirror = false) =>
+          userGesture.map((point) => {
+            const dx = (mirror ? w - point.x : point.x) - cx;
+            const dy = point.y - cy;
+            return {
+              x: cx + (dx * Math.cos(angle) - dy * Math.sin(angle)) * scale,
+              y: cy + (dx * Math.sin(angle) + dy * Math.cos(angle)) * scale,
+            };
+          });
+        const readings = [
+          { points: userGesture, color: 'rgba(232,179,106,0.9)', width: 2.8 },
+          { points: reinterpret(0.08, 0.92, true), color: 'rgba(184,173,255,0.7)', width: 1.6 },
+          { points: reinterpret(-0.12, 0.8), color: 'rgba(134,228,202,0.58)', width: 1.05 },
+        ];
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'screen';
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        for (const reading of readings) {
+          strokePath(ctx, reading.points, reading.points.length, reading.color, reading.width);
         }
       }
     });
-    return stop;
-  }, []);
-  return <canvas ref={ref} className="canvas-cover touch-pan" aria-hidden="true" />;
+    return () => {
+      stop();
+      canvas.removeEventListener('pointerdown', onGestureStart);
+      canvas.removeEventListener('pointermove', onGestureMove);
+      canvas.removeEventListener('pointerleave', onGestureEnd);
+      window.removeEventListener('pointerup', onGestureEnd);
+    };
+  }, [revision]);
+  return (
+    <canvas
+      ref={ref}
+      className="canvas-cover interpretation-canvas touch-pan"
+      aria-hidden="true"
+    />
+  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -407,18 +544,20 @@ function FlockCanvas() {
 /* ------------------------------------------------------------------ */
 
 export function FormsChapter() {
+  const [artRevision, setArtRevision] = useState(0);
+
   return (
     <section id="forms" className="relative bg-ink py-28 md:py-36">
       <div className="mx-auto max-w-7xl px-6">
         <ChapterHead
           title={
             <>
-              Music. Art. Math.
+              Rhythm. Interpretation. Pattern.
               <br />
-              Science. <em className="text-violet-glow">Nature.</em>
+              Connection. <em className="text-violet-glow">Flock.</em>
             </>
           }
-          lede="The chatbox made intelligence look like a blinking cursor. But it was never a cursor — it is rhythm, flow, energy. Five small machines, each one a different accent of the same voice. Play them."
+          lede="Pluck a string. Draw a gesture. Turn a spiral. Pull a network. Disturb a flock. Each study gives the same screen a different kind of life."
         />
 
         <div className="instrument-rack mt-16">
@@ -426,7 +565,7 @@ export function FormsChapter() {
             index="α"
             name="rhythm"
             form="Music"
-            caption="Strings with pinned ends, driven by your hand. Tap — it plucks a note from a pentatonic scale. Intelligence you can hear."
+            caption="Five strings wait under tension. Pluck one and watch a note travel, fade, and leave the field quiet again."
             action={
               <button type="button" className="instrument__action" onClick={() => pluck(0.48)}>
                 Play a note
@@ -437,18 +576,27 @@ export function FormsChapter() {
           </Instrument>
           <Instrument
             index="β"
-            name="flow"
+            name="interpretation"
             form="Art"
-            caption="Three hundred brushes follow an invisible wind of noise. It never repeats. It never stops. It paints because that is what it does."
+            caption="Leave a gesture on the canvas. It returns as a mirror, an echo, and a revision of your hand."
             reverse
+            action={
+              <button
+                type="button"
+                className="instrument__action"
+                onClick={() => setArtRevision((value) => value + 1)}
+              >
+                Begin another reading
+              </button>
+            }
           >
-            <FlowCanvas />
+            <InterpretationCanvas revision={artRevision} />
           </Instrument>
           <Instrument
             index="γ"
             name="form"
             form="Math"
-            caption="The golden angle — 137.508° — the same one sunflowers use to pack their seeds. Beauty with a proof attached."
+            caption="Turn one angle again and again. The points refuse a straight row and gather into a spiral."
           >
             <PhylloCanvas />
           </Instrument>
@@ -456,7 +604,7 @@ export function FormsChapter() {
             index="δ"
             name="signal"
             form="Science"
-            caption="Nodes and edges, reaching for each other. Proteins fold, neurons wire, and somewhere in the connections, knowing happens."
+            caption="Pull one connection. The disturbance travels outward until the whole network settles around it."
             reverse
           >
             <PlexusCanvas />
@@ -465,7 +613,7 @@ export function FormsChapter() {
             index="ε"
             name="flock"
             form="Nature"
-            caption="No leader. Three rules — separate, align, cohere — and a murmuration appears. Mind as something that emerges, not something installed."
+            caption="Each particle keeps its distance, follows its neighbours, and stays close. A flock appears without a leader."
           >
             <FlockCanvas />
           </Instrument>
@@ -473,14 +621,14 @@ export function FormsChapter() {
           <Reveal>
             <div className="instrument-coda">
               <p className="font-serif-display text-3xl md:text-5xl leading-snug text-paper font-light">
-                Intelligence comes in{' '}
-                <em className="text-sand">all forms</em>. What it can do. What
-                it can tell us.{' '}
-                <em className="text-violet-glow">What it can make you feel.</em>
+                Change the form and you change{' '}
+                <em className="text-sand">what the hand can do</em>, what the eye
+                can follow, and{' '}
+                <em className="text-violet-glow">what the machine seems to be.</em>
               </p>
               <p>
-                Every canvas on this page is computed live, for you alone. None
-                of it is footage. That is the point.
+                These studies answer touch as it happens. Next, the field leaves
+                the hand behind and moves through the air.
               </p>
             </div>
           </Reveal>

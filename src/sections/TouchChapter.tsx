@@ -128,7 +128,7 @@ export function TouchChapter() {
               Can we <em className="text-sand">touch</em> it?
           </>
           }
-          lede="Not through a keyboard. Not through a prompt box. Directly — the way a child reaches for a flame. Drag through the word below: it bursts into sand, and like sand, it remembers how to come back."
+          lede="Move through the word below. Its grains scatter, carry your momentum, and find one another again. The word survives by coming apart."
         />
       </div>
 
@@ -149,9 +149,9 @@ export function TouchChapter() {
       <div className="relative mx-auto max-w-7xl px-6 pb-28 md:pb-36">
         <Reveal>
           <p className="max-w-xl text-sm leading-relaxed text-paper/70 font-light">
-            Every grain above is a position and a velocity — nothing more. And
-            yet, together, they hold a word. That is the whole trick of
-            intelligence: simple parts, <span className="text-sand">shaped</span>.
+            No grain holds the word. Each knows only where it is and where it is
+            going. Together, the scattered pieces keep finding{' '}
+            <span className="text-sand">their way back</span>.
           </p>
         </Reveal>
       </div>

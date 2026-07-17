@@ -46,7 +46,15 @@ export function ShapeshiftChapter() {
       });
     } catch {
       mount.dataset.webgl = 'unavailable';
-      return;
+      const message = document.createElement('p');
+      message.className = 'visual-unavailable';
+      message.setAttribute('role', 'status');
+      message.textContent = 'The procedural city is unavailable. The static study remains above.';
+      mount.appendChild(message);
+      return () => {
+        delete mount.dataset.webgl;
+        message.remove();
+      };
     }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality === 'full' ? 2 : 1));
     renderer.setSize(mount.clientWidth, mount.clientHeight);
@@ -213,11 +221,10 @@ export function ShapeshiftChapter() {
         <ChapterHead
           title={
             <>
-              A <em className="text-violet-glow">shapeshifter</em>, caught
-              mid-form.
+              A city, <em className="text-violet-glow">briefly</em>.
             </>
           }
-          lede="One minute it's a man eating spaghetti in a warped fever dream. The next, it's a city no architect drew — assembling itself, unbuilding itself, beginning again. Pull it apart and it bursts into sand; give it a moment and it reforms into silicon."
+          lede="Towers rise from dust. Streets hold for a moment. Then the whole structure loosens and begins again."
         />
       </div>
 
@@ -229,7 +236,7 @@ export function ShapeshiftChapter() {
         />
         <div className="pointer-events-none absolute bottom-5 left-6 flex items-center gap-3">
           <span className="font-mono-label text-xs tracking-[0.12em] text-paper/70 uppercase">
-            latent space · 1,600 instances · procedural
+            procedural field · 1,600 instances
           </span>
           <span className="h-px w-10 bg-violet-glow/30" />
         </div>

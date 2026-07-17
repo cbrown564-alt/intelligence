@@ -27,6 +27,10 @@ export default defineConfig({
       name: 'mobile',
       use: { viewport: { width: 390, height: 844 } },
     },
+    {
+      name: 'compact',
+      use: { viewport: { width: 320, height: 568 } },
+    },
   ],
   webServer: {
     command: 'npm run dev -- --host 127.0.0.1 --port 4174',

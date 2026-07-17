@@ -62,23 +62,25 @@ export function ExperienceControls() {
   const { motion, quality, setMotion, setQuality } = useExperiencePreferences();
 
   return (
-    <div className="experience-controls" aria-label="Experience settings">
-      <button
-        type="button"
-        className="experience-control"
-        aria-pressed={motion === 'full'}
-        onClick={() => setMotion(motion === 'full' ? 'reduced' : 'full')}
-      >
-        Motion <span>{motion === 'full' ? 'on' : 'off'}</span>
-      </button>
-      <button
-        type="button"
-        className="experience-control"
-        aria-pressed={quality === 'full'}
-        onClick={() => setQuality(quality === 'full' ? 'lite' : 'full')}
-      >
-        Detail <span>{quality}</span>
-      </button>
+    <div className="experience-controls" role="group" aria-label="Experience settings">
+    <button
+      type="button"
+      className="experience-control"
+      aria-pressed={motion === 'full'}
+      onClick={() => setMotion(motion === 'full' ? 'reduced' : 'full')}
+    >
+      <span className="experience-control__label">Motion</span>{' '}
+      <span>{motion === 'full' ? 'on' : 'off'}</span>
+    </button>
+    <button
+      type="button"
+      className="experience-control"
+      aria-pressed={quality === 'full'}
+      onClick={() => setQuality(quality === 'full' ? 'lite' : 'full')}
+    >
+      <span className="experience-control__label">Detail</span>{' '}
+      <span>{quality}</span>
+    </button>
     </div>
   );
 }

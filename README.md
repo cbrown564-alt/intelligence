@@ -18,18 +18,19 @@ npm run dev
 npm run check
 ```
 
-`npm run check` runs ESLint, the semantic/source contract tests, the production build, and the initial JavaScript budget. The entry bundle must remain below 150 KB gzip. Visual and responsive behavior should also be exercised in a real browser at desktop and 390 px mobile widths.
+`npm run check` runs ESLint, the semantic/source contract tests, the production build, the initial JavaScript budget, and Playwright checks at 1280 px, 390 px, and 320 px widths. The suite also exercises the layout at a 200% equivalent viewport. The entry bundle must remain below 150 KB gzip.
 
 ## Architecture
 
 - `src/pages/Home.tsx` owns the essay shell, active chapter state, and near-viewport dynamic imports.
 - `src/content/chapters.ts` owns the semantic preview shown before an interactive chapter loads or whenever motion is reduced.
+- `src/components/ChapterArtwork.tsx` owns the five subject-specific static studies used by reduced motion and loading states.
+- `src/components/EnhancementBoundary.tsx` keeps the semantic chapter available and offers recovery when a lazy interactive module fails.
 - `src/components/ExperiencePreferences.tsx` owns persistent motion and rendering-detail preferences.
-- `src/components/MatterCurrent.tsx` owns the continuous scroll and touch-responsive transformation shared by all eight chapters.
+- `src/components/MatterCurrent.tsx` owns the continuous scroll and touch-responsive transformation shared by all six chapters.
 - `src/components/LazyChapter.tsx` keeps chapter engines out of the initial route and mounts them near the viewport.
 - `src/lib/canvas.ts` owns DPR, pointer, resize, visibility, and cleanup behavior for 2D canvases.
 - `src/sections/*` owns the optional chapter-specific interaction layer.
-- `src/components/References.tsx` owns factual notes and external sources.
 
 The Hero's Three.js engine is also dynamically imported, so readable opening copy and a static poster arrive before WebGL.
 
@@ -58,9 +59,7 @@ Canvas elements are hidden from the accessibility tree because their meaning is 
 
 ## Editorial policy
 
-Factual, medical, and attributed claims require a visible source. Medical research must be described as research evidence rather than a diagnosis or deployed capability. Quotation marks are reserved for verified wording.
-
-The current references cover silicon production, experimental breath-sensor research, and bacterial chemotaxis. Add new references in `src/components/References.tsx` and link them with `Footnote`.
+The essay speaks through its scenes and interactions. Copy describes what a reader can see, hear, or change, then leaves room for interpretation. Avoid factual detours, defensive disclaimers, and abstract claims that the scene cannot carry.
 
 ## Deployment
 

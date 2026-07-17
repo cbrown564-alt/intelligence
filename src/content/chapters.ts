@@ -1,5 +1,13 @@
+export type ChapterId =
+  | 'shape'
+  | 'touch'
+  | 'forms'
+  | 'scent'
+  | 'shapeshift'
+  | 'vision';
+
 export interface ChapterSummary {
-  id: string;
+  id: ChapterId;
   label: string;
   shortLabel: string;
   title: string;
@@ -15,9 +23,9 @@ export const CHAPTERS: ChapterSummary[] = [
     shortLabel: 'Shape',
     title: 'What is the shape of intelligence?',
     summary:
-      'It has no body. And yet we reach for it — through glass, sound, and silicon.',
+      'It arrives as light on glass, a pulse of sound, or a pattern caught by a sensor.',
     detail:
-      'The opening particle form moves between a sphere, a knot, and a cloud. The motion is optional; the question is not.',
+      'A sphere becomes a knot, then a cloud. Matter becomes signal; signal becomes form.',
     accent: 'sand',
   },
   {
@@ -26,75 +34,53 @@ export const CHAPTERS: ChapterSummary[] = [
     shortLabel: 'Touch',
     title: 'Can we touch it?',
     summary:
-      'A word built from simple particles scatters under a pointer, then remembers its shape.',
+      'A word scatters beneath your hand, carries your momentum, and finds itself again.',
     detail:
-      'The interaction demonstrates emergence: no grain knows the word, but local movement preserves a larger form.',
+      'No grain holds the word. Together, the scattered pieces keep finding their way back.',
     accent: 'sand',
   },
   {
     id: 'forms',
     label: 'Many forms',
     shortLabel: 'Forms',
-    title: 'Music. Art. Math. Science. Nature.',
+    title: 'Rhythm. Interpretation. Pattern. Connection. Flock.',
     summary:
-      'Five small instruments translate the same idea into rhythm, flow, pattern, connection, and flocking.',
+      'Five instruments turn touch into rhythm, gesture, pattern, connection, and flocking.',
     detail:
-      'The canvas layer is playful, not required. Each instrument is described in text and can be skipped without losing the chapter’s point.',
-    accent: 'violet',
-  },
-  {
-    id: 'silicon',
-    label: 'Silicon',
-    shortLabel: 'Silicon',
-    title: 'Teaching sand how to think.',
-    summary:
-      'Silica-bearing quartz is refined into silicon; small quantities become the high-purity material used in semiconductors.',
-    detail:
-      'The metaphor compresses a long industrial process. The references below separate the physical fact from the poetic claim.',
+      'Each one gives the hand something different to do and the eye something different to follow.',
     accent: 'violet',
   },
   {
     id: 'scent',
     label: 'Scent',
     shortLabel: 'Scent',
-    title: 'Teaching computers how to smell.',
+    title: 'What can a machine smell?',
     summary:
-      'Experimental sensor arrays classify patterns of volatile compounds in breath. They are research systems, not standalone diagnoses.',
+      'A scent drifts, thins, mingles, and disappears. The plume gives the invisible a shape.',
     detail:
-      'Bacteria also respond to chemical gradients through chemotaxis — a reminder that sensing is older and broader than vision or language.',
+      'Move through the field and the scattered traces gather into a pattern you can disturb.',
     accent: 'sea',
   },
   {
     id: 'shapeshift',
     label: 'Shapeshift',
     shortLabel: 'Shift',
-    title: 'A shapeshifter, caught mid-form.',
+    title: 'A city, briefly.',
     summary:
-      'A procedural city assembles, loosens into dust, and reforms without a fixed final state.',
+      'Towers rise from dust. Streets hold for a moment. Then the structure loosens and begins again.',
     detail:
-      'The scene treats machine intelligence as a changing space of possibilities rather than a single face or chat box.',
+      'Nothing settles into a final state. The city exists only while its pieces agree to hold.',
     accent: 'violet',
-  },
-  {
-    id: 'slop',
-    label: 'Slop',
-    shortLabel: 'Slop',
-    title: 'What magic becomes without a vision.',
-    summary:
-      'Bad output is not evidence that the underlying capability is trivial. It is evidence that direction, care, and judgment still matter.',
-    detail:
-      'In reduced-motion mode the critique appears directly, without the long degradation sequence.',
-    accent: 'rose',
   },
   {
     id: 'vision',
     label: 'Vision',
     shortLabel: 'Vision',
-    title: 'We need a clear vision.',
+    title: 'The interface shapes the encounter.',
     summary:
-      'Not another chat box by default. A way of meeting machine intelligence that can be tactile, visual, musical, and legible.',
+      'A voice, a gesture, a chemical trace, a field of light: each form reveals a different machine.',
     detail:
-      'The ending returns to the opening question: the shape is partly determined by the interfaces and intentions we give it.',
+      'Change the encounter and the machine appears to change with it.',
     accent: 'sand',
   },
 ];
@@ -102,4 +88,3 @@ export const CHAPTERS: ChapterSummary[] = [
 export const CHAPTER_BY_ID = Object.fromEntries(
   CHAPTERS.map((chapter) => [chapter.id, chapter])
 ) as Record<string, ChapterSummary>;
-

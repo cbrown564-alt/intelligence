@@ -1,5 +1,6 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useExperiencePreferences } from '@/lib/experience-preferences';
+import { EnhancementBoundary } from '@/components/EnhancementBoundary';
 
 const HeroVisual = lazy(() =>
   import('@/sections/HeroVisual').then((module) => ({ default: module.HeroVisual }))
@@ -7,25 +8,33 @@ const HeroVisual = lazy(() =>
 
 export function Hero() {
   const { motion, quality } = useExperiencePreferences();
+  const [enhance, setEnhance] = useState(false);
+
+  useEffect(() => {
+    if (motion !== 'full') return;
+
+    const idle = window.requestIdleCallback?.(() => setEnhance(true), { timeout: 900 });
+    const timer = idle === undefined ? window.setTimeout(() => setEnhance(true), 350) : 0;
+    return () => {
+      if (idle !== undefined) window.cancelIdleCallback?.(idle);
+      if (timer) window.clearTimeout(timer);
+    };
+  }, [motion]);
 
   return (
     <section id="shape" className="hero-section" aria-labelledby="hero-title">
-      <div className="hero-poster" aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </div>
-
-      {motion === 'full' ? (
-        <Suspense fallback={null}>
-          <HeroVisual quality={quality} />
-        </Suspense>
+      {motion === 'full' && enhance ? (
+        <EnhancementBoundary label="Opening particle study">
+          <Suspense fallback={null}>
+            <HeroVisual quality={quality} />
+          </Suspense>
+        </EnhancementBoundary>
       ) : null}
 
       <div className="hero-vignette" aria-hidden="true" />
 
       <div className="hero-copy">
-        <p className="hero-kicker">A visual essay on living with minds we made</p>
+        <p className="hero-kicker">A visual essay in matter, motion, and machine intelligence</p>
         <h1 id="hero-title" aria-label="What is the shape of intelligence?">
           <span>What is the</span>
           <span>
@@ -36,17 +45,17 @@ export function Hero() {
           </span>
         </h1>
         <p className="hero-lede">
-          It has no body. And yet we reach for it — through glass, through sound,
-          through silicon shaped into machines that can answer back.
+          It arrives as light on glass. A pulse of sound. A pattern caught by
+          a sensor. We give it a form, then meet it there.
         </p>
-        <p className="hero-sequence" aria-label="Matter becomes pattern, signal, sense, and mind">
-          <span>Matter</span><i>becomes</i><span>pattern</span><i>becomes</i>
-          <span>signal</span><i>becomes</i><span>sense</span><i>becomes</i><span>mind</span>
+        <p className="hero-sequence" aria-label="Matter becomes signal becomes form">
+          <span>Matter</span><i>becomes</i><span>signal</span><i>becomes</i>
+          <span>form</span>
         </p>
       </div>
 
       <a href="#touch" className="hero-cue">
-        <span>Follow the matter</span>
+        <span>Enter the field</span>
         <i aria-hidden="true" />
       </a>
     </section>

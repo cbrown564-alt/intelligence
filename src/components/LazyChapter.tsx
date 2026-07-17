@@ -7,6 +7,7 @@ import {
   type LazyExoticComponent,
 } from 'react';
 import { ChapterPreview } from '@/components/ChapterPreview';
+import { EnhancementBoundary } from '@/components/EnhancementBoundary';
 import { useExperiencePreferences } from '@/lib/experience-preferences';
 import type { ChapterSummary } from '@/content/chapters';
 
@@ -44,7 +45,7 @@ export function LazyChapter({ chapter, component: Component }: LazyChapterProps)
           observer.disconnect();
         }
       },
-      { rootMargin: '900px 0px' }
+      { rootMargin: `${Math.round(Math.min(900, window.innerHeight * 0.9))}px 0px` }
     );
     observer.observe(marker);
     return () => observer.disconnect();
@@ -53,9 +54,14 @@ export function LazyChapter({ chapter, component: Component }: LazyChapterProps)
   return (
     <div ref={markerRef} data-lazy-chapter={chapter.id}>
       {motion === 'full' && nearViewport ? (
-        <Suspense fallback={<ChapterPreview chapter={chapter} />}>
-          <LoadedChapter key={quality} id={chapter.id} component={Component} />
-        </Suspense>
+        <EnhancementBoundary
+          label={`${chapter.label} interactive study`}
+          fallback={<ChapterPreview chapter={chapter} enhancementError />}
+        >
+          <Suspense fallback={<ChapterPreview chapter={chapter} />}>
+            <LoadedChapter key={quality} id={chapter.id} component={Component} />
+          </Suspense>
+        </EnhancementBoundary>
       ) : (
         <ChapterPreview chapter={chapter} />
       )}

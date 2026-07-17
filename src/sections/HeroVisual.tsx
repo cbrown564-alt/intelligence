@@ -86,7 +86,15 @@ export function HeroVisual({ quality }: { quality: QualityMode }) {
       });
     } catch {
       mount.dataset.webgl = 'unavailable';
-      return;
+      const message = document.createElement('p');
+      message.className = 'visual-unavailable';
+      message.setAttribute('role', 'status');
+      message.textContent = 'The particle study is unavailable. The essay continues below.';
+      mount.appendChild(message);
+      return () => {
+        delete mount.dataset.webgl;
+        message.remove();
+      };
     }
 
     const scene = new Scene();
@@ -199,6 +207,7 @@ export function HeroVisual({ quality }: { quality: QualityMode }) {
     const observer = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
       mount.dataset.rendering = String(visible);
+      renderer.domElement.style.visibility = visible ? 'visible' : 'hidden';
     });
     observer.observe(mount);
 
