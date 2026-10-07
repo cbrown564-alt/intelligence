@@ -81,4 +81,9 @@ Run `npm ci` and `npm run check` before deployment. `npm run deploy` performs th
 
 `public/_headers` marks this preview as `noindex, nofollow`. Remove that preview policy only when the production URL is agreed. The existing Vercel application remains the production host until cutover is approved and verified. Windows screenshot baselines require their original platform for exact comparisons.
 
+The GitHub verification workflow runs the full `npm run check` command on
+Windows with Chrome so the committed Windows screenshot baselines are checked
+on their original platform. Failed runs retain visual diagnostics for review;
+the workflow does not deploy or update screenshot baselines automatically.
+
 `vite.config.ts` uses a relative base so the essay can be hosted below a subpath. Before a public launch, replace the relative social-preview URL in `index.html` with the final absolute deployment URL; Open Graph crawlers generally expect absolute image URLs.

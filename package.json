@@ -18,7 +18,7 @@
     "video:render": "remotion render video/index.ts ShapeOfIntelligence renders/shape-of-intelligence-mobile.mp4 --codec=h264 --crf=18 --pixel-format=yuv420p --gop=60 --muted",
     "video:delivery": "remotion render video/index.ts ShapeOfIntelligenceDelivery renders/shape-of-intelligence-mobile-delivery.mp4 --codec=h264 --crf=26 --pixel-format=yuv420p --gop=60 --muted",
     "audio:check": "node --env-file=.env scripts/check-elevenlabs-env.mjs",
-    "deploy": "npm run build && cf deploy --prebuilt"
+    "deploy": "npm run build && cf deploy --prebuilt --mode production"
   },
   "dependencies": {
     "react": "^19.2.0",

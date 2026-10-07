@@ -1,0 +1,30 @@
+name: Verify essay and Windows visual baselines
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install chrome
+      - run: npm run check
+      - name: Preserve visual-check diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-visual-check-diagnostics
+          path: test-results/
+          if-no-files-found: ignore
