@@ -3,7 +3,7 @@ name: Verify essay and Windows visual baselines
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:
 
 permissions:
