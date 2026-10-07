@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node scripts/check-bundle.mjs .cloudflare/output/v0/workers/default/assets",
+    "build": "tsc -b && vite build && node scripts/check-bundle.mjs .cloudflare/output/v0/workers/default/assets && node scripts/prepare-cloudflare.mjs",
+    "build:preview": "tsc -b && vite build --mode migration-preview && node scripts/check-bundle.mjs .cloudflare/output/v0/workers/default/assets && node scripts/prepare-cloudflare.mjs",
     "lint": "eslint src tests vite.config.ts vitest.config.ts playwright.config.ts",
     "test": "vitest run",
     "test:visual": "playwright test",
@@ -18,7 +19,8 @@
     "video:render": "remotion render video/index.ts ShapeOfIntelligence renders/shape-of-intelligence-mobile.mp4 --codec=h264 --crf=18 --pixel-format=yuv420p --gop=60 --muted",
     "video:delivery": "remotion render video/index.ts ShapeOfIntelligenceDelivery renders/shape-of-intelligence-mobile-delivery.mp4 --codec=h264 --crf=26 --pixel-format=yuv420p --gop=60 --muted",
     "audio:check": "node --env-file=.env scripts/check-elevenlabs-env.mjs",
-    "deploy": "npm run build && cf deploy --prebuilt --mode production"
+    "deploy": "npm run build && cf deploy --prebuilt --mode production",
+    "deploy:preview": "npm run build:preview && cf deploy --prebuilt --mode migration-preview"
   },
   "dependencies": {
     "react": "^19.2.0",

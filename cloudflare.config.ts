@@ -1,9 +1,9 @@
 import { defineConfig } from 'cf/config'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   accountId: 'e1909c4d4aec0a75a0a34fc15ee35482',
   worker: {
-    name: 'intelligence-migration-preview',
+    name: mode === 'production' ? 'intelligence' : 'intelligence-migration-preview',
     compatibilityDate: '2026-10-07',
     observability: {
       enabled: true,
@@ -14,4 +14,4 @@ export default defineConfig({
       notFoundHandling: 'single-page-application',
     },
   },
-})
+}))
