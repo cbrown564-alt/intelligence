@@ -87,3 +87,5 @@ on their original platform. Failed runs retain visual diagnostics for review;
 the workflow does not deploy or update screenshot baselines automatically.
 
 `vite.config.ts` uses a relative base so the essay can be hosted below a subpath. The canonical and social-preview URLs in `index.html` use the approved absolute production address.
+
+Until Vercel retirement, `vercel.json` points its deployment to the same generated static assets so the existing Git integration can still build a recovery deployment.
