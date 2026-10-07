@@ -6,8 +6,8 @@ The written argument is the product. WebGL, canvas, audio, and scroll motion are
 
 ## Requirements
 
-- Node.js 20 LTS
-- npm 10 (the committed `package-lock.json` is canonical)
+- Node.js 24 LTS (Cloudflare configuration requires Node.js 22.18 or later)
+- npm 10 or later (the committed `package-lock.json` is canonical)
 - Google Chrome for the committed desktop and mobile visual checks
 
 ## Commands
@@ -74,5 +74,11 @@ Canvas elements are hidden from the accessibility tree because their meaning is 
 The essay speaks through its scenes and interactions. Copy describes what a reader can see, hear, or change, then leaves room for interpretation. Avoid factual detours, defensive disclaimers, and abstract claims that the scene cannot carry.
 
 ## Deployment
+
+The Cloudflare migration branch targets the isolated `intelligence-migration-preview` Worker in the configured Cloudflare account. It does not attach a production domain. `cf` and the Cloudflare Vite plugin are pinned while their configuration API is in beta.
+
+Run `npm ci` and `npm run check` before deployment. `npm run deploy` performs the TypeScript build and 150 KB initial-bundle check, then uploads the prebuilt Cloudflare output. Running `cf deploy` directly bypasses the package's TypeScript and bundle-budget checks. Static files are generated in `.cloudflare/output/v0/workers/default/assets`; source documents and companion-film renders are not published.
+
+`public/_headers` marks this preview as `noindex, nofollow`. Remove that preview policy only when the production URL is agreed. The existing Vercel application remains the production host until cutover is approved and verified. Windows screenshot baselines require their original platform for exact comparisons.
 
 `vite.config.ts` uses a relative base so the essay can be hosted below a subpath. Before a public launch, replace the relative social-preview URL in `index.html` with the final absolute deployment URL; Open Graph crawlers generally expect absolute image URLs.

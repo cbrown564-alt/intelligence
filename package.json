@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node scripts/check-bundle.mjs",
+    "build": "tsc -b && vite build && node scripts/check-bundle.mjs .cloudflare/output/v0/workers/default/assets",
     "lint": "eslint src tests vite.config.ts vitest.config.ts playwright.config.ts",
     "test": "vitest run",
     "test:visual": "playwright test",
@@ -17,7 +17,8 @@
     "video:handoff": "remotion still video/index.ts ShapeOfIntelligence renders/shape-of-intelligence-handoff.png --frame=1438",
     "video:render": "remotion render video/index.ts ShapeOfIntelligence renders/shape-of-intelligence-mobile.mp4 --codec=h264 --crf=18 --pixel-format=yuv420p --gop=60 --muted",
     "video:delivery": "remotion render video/index.ts ShapeOfIntelligenceDelivery renders/shape-of-intelligence-mobile-delivery.mp4 --codec=h264 --crf=26 --pixel-format=yuv420p --gop=60 --muted",
-    "audio:check": "node --env-file=.env scripts/check-elevenlabs-env.mjs"
+    "audio:check": "node --env-file=.env scripts/check-elevenlabs-env.mjs",
+    "deploy": "npm run build && cf deploy --prebuilt"
   },
   "dependencies": {
     "react": "^19.2.0",
@@ -25,6 +26,7 @@
     "three": "^0.185.1"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "2.0.0-beta.sha-52b0dc0e9",
     "@eslint/js": "^9.39.1",
     "@playwright/test": "^1.61.1",
     "@remotion/cli": "^4.0.490",
@@ -37,6 +39,7 @@
     "@types/three": "^0.185.1",
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.23",
+    "cf": "1.0.0-beta.12",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",

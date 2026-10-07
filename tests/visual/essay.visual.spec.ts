@@ -28,10 +28,12 @@ test('a direct chapter link renders the semantic preview', async ({ page }) => {
 })
 
 test('keyboard focus starts with the skip link and stays visible', async ({ page }) => {
-  await page.goto('/#shape')
+  // A chapter fragment starts the browser's tab order at that chapter.
+  await page.goto('/')
+  const skipLink = page.getByRole('link', { name: 'Skip to the essay' })
+  await expect(skipLink).toBeAttached()
   await page.keyboard.press('Tab')
 
-  const skipLink = page.getByRole('link', { name: 'Skip to the essay' })
   await expect(skipLink).toBeFocused()
   await expect(skipLink).toHaveCSS('outline-style', 'solid')
   await expect(skipLink).toHaveCSS('outline-width', '3px')
