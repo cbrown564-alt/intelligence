@@ -1,10 +1,11 @@
 import path from 'path'
 import react from '@vitejs/plugin-react'
+import { cloudflare } from '@cloudflare/vite-plugin'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
   base: './',
-  plugins: [react()],
+  plugins: [react(), cloudflare()],
   build: {
     // Three.js is isolated in a near-viewport async chunk; the entry bundle has
     // a separate 150 KB gzip budget enforced by scripts/check-bundle.mjs.
